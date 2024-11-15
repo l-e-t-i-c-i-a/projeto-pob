@@ -29,7 +29,7 @@ import javax.swing.border.LineBorder;
 import javax.swing.table.DefaultTableModel;
 
 import modelo.Telefone;
-import regras_negocio.Fachada;
+import regras_negocio.Fachada1;
 
 public class TelaTelefone {
 	private JDialog frame;
@@ -73,12 +73,12 @@ public class TelaTelefone {
 		frame.addWindowListener(new WindowAdapter() {
 			@Override
 			public void windowOpened(WindowEvent arg0) {
-				Fachada.inicializar();
+				Fachada1.inicializar();
 				listagem();
 			}
 			@Override
 			public void windowClosing(WindowEvent e) {
-				Fachada.finalizar();
+				Fachada1.finalizar();
 			}
 		});
 		frame.setResizable(false);
@@ -137,13 +137,13 @@ public class TelaTelefone {
 						return;
 					}
 					String numero = textField_2.getText();
-					//confirmação
+					//confirmaï¿½ï¿½o
 					Object[] options = { "Confirmar", "Cancelar" };
-					int escolha = JOptionPane.showOptionDialog(null, "Confirma exclusão do telefone "+numero, "Alerta",
+					int escolha = JOptionPane.showOptionDialog(null, "Confirma exclusï¿½o do telefone "+numero, "Alerta",
 							JOptionPane.DEFAULT_OPTION, JOptionPane.WARNING_MESSAGE, null, options, options[1]);
 					if(escolha == 0) {
-						Fachada.excluirTelefone(numero);
-						label.setText("exclusão realizada");
+						Fachada1.excluirTelefone(numero);
+						label.setText("exclusï¿½o realizada");
 						listagem();
 					}
 				}
@@ -217,7 +217,7 @@ public class TelaTelefone {
 					}
 					String nome = textField_1.getText();
 					String telefone = textField_2.getText();
-					Fachada.criarTelefone(nome, telefone);
+					Fachada1.criarTelefone(nome, telefone);
 					label.setText("telefone criado");
 					listagem();
 				}
@@ -241,7 +241,7 @@ public class TelaTelefone {
 					}
 					String numero1 = textField_2.getText();
 					String numero2 = textField_3.getText();
-					Fachada.alterarNumero(numero1, numero2);
+					Fachada1.alterarNumero(numero1, numero2);
 					label.setText("telefone atualizado");
 					listagem();
 				}
@@ -270,7 +270,7 @@ public class TelaTelefone {
 
 	public void listagem () {
 		try{
-			List<Telefone> lista = Fachada.consultarTelefones(textField.getText());
+			List<Telefone> lista = Fachada1.consultarTelefones(textField.getText());
 			DefaultTableModel model = new DefaultTableModel();
 			table.setModel(model);
 			

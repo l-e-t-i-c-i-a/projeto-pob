@@ -18,11 +18,8 @@ import modelo.Aluno;
 import modelo.Pessoa;
 import modelo.Telefone;
 
-import modelo.Veiculo;
-import modelo.Bilhete;
-
-public class Fachada {
-	private Fachada() {}
+public class Fachada1 {
+	private Fachada1() {}
 
 	private static DAOPessoa daopessoa = new DAOPessoa();
 	private static DAOAluno daoaluno = new DAOAluno();

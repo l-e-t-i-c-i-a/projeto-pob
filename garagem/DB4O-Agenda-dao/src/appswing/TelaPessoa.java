@@ -1,7 +1,7 @@
 /**********************************
  * IFPB - Curso Superior de Tec. em Sist. para Internet
  * Pesist~encia de Objetos
- * Prof. Fausto Maranhão Ayres
+ * Prof. Fausto Maranhï¿½o Ayres
  **********************************/
 
 package appswing;
@@ -33,7 +33,7 @@ import javax.swing.table.DefaultTableModel;
 
 import modelo.Pessoa;
 import modelo.Telefone;
-import regras_negocio.Fachada;
+import regras_negocio.Fachada1;
 
 public class TelaPessoa {
 	private JDialog frame;
@@ -74,13 +74,13 @@ public class TelaPessoa {
 		frame.addWindowListener(new WindowAdapter() {
 			@Override
 			public void windowOpened(WindowEvent arg0) {
-				Fachada.inicializar();
+				Fachada1.inicializar();
 				listagem();
 			}
 
 			@Override
 			public void windowClosing(WindowEvent e) {
-				Fachada.finalizar();
+				Fachada1.finalizar();
 			}
 		});
 		frame.setTitle("Pessoas");
@@ -108,7 +108,7 @@ public class TelaPessoa {
 					if (table.getSelectedRow() >= 0) {
 						// pegar o nome, data nascimento e apelidos da pessoa selecionada
 						String nome = (String) table.getValueAt(table.getSelectedRow(), 1);
-						Pessoa p = Fachada.localizarPessoa(nome);
+						Pessoa p = Fachada1.localizarPessoa(nome);
 						String data = p.getDtNascimento();
 						textField_1.setText(nome);
 						textField_2.setText(data);
@@ -149,14 +149,14 @@ public class TelaPessoa {
 					String nome = textField_1.getText();
 					Object[] options = { "Confirmar", "Cancelar" };
 					int escolha = JOptionPane.showOptionDialog(null,
-							"Esta operação apagará os telefones e removerá as reunioes de " + nome, "Alerta",
+							"Esta operaï¿½ï¿½o apagarï¿½ os telefones e removerï¿½ as reunioes de " + nome, "Alerta",
 							JOptionPane.DEFAULT_OPTION, JOptionPane.WARNING_MESSAGE, null, options, options[1]);
 					if (escolha == 0) {
-						Fachada.excluirPessoa(nome);
+						Fachada1.excluirPessoa(nome);
 						label.setText("pessoa excluida");
 						listagem(); // listagem
 					} else
-						label.setText("exclusão cancelada");
+						label.setText("exclusï¿½o cancelada");
 
 				} catch (Exception erro) {
 					label.setText(erro.getMessage());
@@ -242,10 +242,10 @@ public class TelaPessoa {
 					String nascimento = textField_2.getText().trim();
 					String[] apelidos = textField_3.getText().trim().split(",");
 
-					Fachada.criarPessoa(nome, nascimento, new ArrayList<>(Arrays.asList(apelidos)));
+					Fachada1.criarPessoa(nome, nascimento, new ArrayList<>(Arrays.asList(apelidos)));
 					String numero = textField_4.getText();
 					if (!numero.isEmpty())
-						Fachada.criarTelefone(nome, numero);
+						Fachada1.criarTelefone(nome, numero);
 
 					label.setText("pessoa criada");
 					listagem();
@@ -271,10 +271,10 @@ public class TelaPessoa {
 					String nascimento = textField_2.getText();
 					String[] apelidos = textField_3.getText().trim().split(",");
 
-					Fachada.alterarPessoa(nome, nascimento, new ArrayList<>(Arrays.asList(apelidos)));
+					Fachada1.alterarPessoa(nome, nascimento, new ArrayList<>(Arrays.asList(apelidos)));
 					String numero = textField_4.getText();
 					if (!numero.isEmpty())
-						Fachada.criarTelefone(nome, numero);
+						Fachada1.criarTelefone(nome, numero);
 					label.setText("pessoa alterada");
 					listagem();
 				} catch (Exception ex2) {
@@ -319,7 +319,7 @@ public class TelaPessoa {
 
 	public void listagem() {
 		try {
-			List<Pessoa> lista = Fachada.consultarPessoas(textField.getText());
+			List<Pessoa> lista = Fachada1.consultarPessoas(textField.getText());
 
 			// objeto model contem todas as linhas e colunas da tabela
 			DefaultTableModel model = new DefaultTableModel();

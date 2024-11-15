@@ -5,25 +5,25 @@ package appconsole;
  * Prof. Fausto Ayres
  **********************************/
 
-import regras_negocio.Fachada;
+import regras_negocio.Fachada1;
 
 
 public class Deletar {
 
 	public Deletar(){
-		Fachada.inicializar();
+		Fachada1.inicializar();
 		try {
-			Fachada.excluirPessoa("jose");
+			Fachada1.excluirPessoa("jose");
 			System.out.println("apagou jose e seus telefones orfaos");
 			
-			Fachada.excluirTelefone("988881111");
+			Fachada1.excluirTelefone("988881111");
 			System.out.println("apagou telefone...988881111");
 		} 
 		catch (Exception e) {
 			System.out.println(e.getMessage());
 		}
 		
-		Fachada.finalizar();
+		Fachada1.finalizar();
 		System.out.println("fim do programa");
 	}
 

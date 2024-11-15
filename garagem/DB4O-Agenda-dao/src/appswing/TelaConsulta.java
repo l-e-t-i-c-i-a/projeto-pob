@@ -29,7 +29,7 @@ import javax.swing.table.DefaultTableModel;
 
 import modelo.Pessoa;
 import modelo.Telefone;
-import regras_negocio.Fachada;
+import regras_negocio.Fachada1;
 
 public class TelaConsulta {
 	private JDialog frame;
@@ -79,11 +79,11 @@ public class TelaConsulta {
 		frame.addWindowListener(new WindowAdapter() {
 			@Override
 			public void windowOpened(WindowEvent e) {
-				Fachada.inicializar();
+				Fachada1.inicializar();
 			}
 			@Override
 			public void windowClosing(WindowEvent e) {
-				Fachada.finalizar();
+				Fachada1.finalizar();
 			}
 		});
 
@@ -131,18 +131,18 @@ public class TelaConsulta {
 					switch(index) {
 					case 0: 
 						String mes = JOptionPane.showInputDialog("digite o mes");
-						List<Pessoa> resultado1 = Fachada.consultarMesNascimento(mes) ;
+						List<Pessoa> resultado1 = Fachada1.consultarMesNascimento(mes) ;
 						listagemPessoa(resultado1);
 						break;
 					case 1: 
 						String modelo = JOptionPane.showInputDialog("digite o apelido");
-						List<Pessoa> resultado2 = Fachada.consultarApelido(modelo);
+						List<Pessoa> resultado2 = Fachada1.consultarApelido(modelo);
 						listagemPessoa(resultado2);		
 						break;
 					case 2: 
 						String n = JOptionPane.showInputDialog("digite N");
 						int numero = Integer.parseInt(n);
-						List<Pessoa> resultado3 = Fachada.consultarPessoasNTelefones(numero);
+						List<Pessoa> resultado3 = Fachada1.consultarPessoasNTelefones(numero);
 						listagemPessoa(resultado3);
 						break;
 
