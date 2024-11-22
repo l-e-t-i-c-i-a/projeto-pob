@@ -11,12 +11,8 @@ import java.time.format.DateTimeParseException;
 import java.util.List;
 
 import daodb4o.DAO;
-import daodb4o.DAOAluno;
-import daodb4o.DAOPessoa;
-import daodb4o.DAOTelefone;
-import modelo.Aluno;
-import modelo.Pessoa;
-import modelo.Telefone;
+import daodb4o.DAOVeiculo;
+import daodb4o.DAOBilhete;
 
 import modelo.Veiculo;
 import modelo.Bilhete;
@@ -24,9 +20,8 @@ import modelo.Bilhete;
 public class Fachada {
 	private Fachada() {}
 
-	private static DAOPessoa daopessoa = new DAOPessoa();
-	private static DAOAluno daoaluno = new DAOAluno();
-	private static DAOTelefone daotelefone = new DAOTelefone();
+	private static DAOVeiculo daoveiculo = new DAOVeiculo();
+	private static DAOBilhete daobilhete = new DAOBilhete();
 
 	public static void inicializar() {
 		DAO.open();
@@ -36,19 +31,19 @@ public class Fachada {
 		DAO.close();
 	}
 
-	public static Pessoa localizarPessoa(String nome) throws Exception {
-		Pessoa p = daopessoa.read(nome);
-		if (p == null) {
-			throw new Exception("pessoa inexistente:" + nome);
+	public static Veiculo localizarVeiculo(String placa) throws Exception {
+		Veiculo v = daoveiculo.read(placa);
+		if (v == null) {
+			throw new Exception("Veiculo inexistente:" + placa);
 		}
-		return p;
+		return v;
 	}
-	public static Aluno localizarAluno(String nome) throws Exception {
-		Aluno a = daoaluno.read(nome);
-		if (a == null) {
-			throw new Exception("aluno inexistente:" + nome);
+	public static Aluno localizarBilhete(String codigoDeBarra) throws Exception {
+		Bilhete b = daobilhete.read(codigoDeBarra);
+		if (b == null) {
+			throw new Exception("aluno inexistente:" + codigoDeBarra);
 		}
-		return a;
+		return b;
 	}
 
 	public static void criarPessoa(String nome, String data, List<String> apelidos) throws Exception {

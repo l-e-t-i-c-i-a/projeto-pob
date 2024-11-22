@@ -57,17 +57,14 @@ public class Util {
 		ClientConfiguration config = Db4oClientServer.newClientConfiguration( ) ;
 		config.common().messageLevel(0);  // 0,1,2,3...
 
-		config.common().objectClass(Pessoa.class).cascadeOnDelete(false);;
-		config.common().objectClass(Pessoa.class).cascadeOnUpdate(true);;
-		config.common().objectClass(Pessoa.class).cascadeOnActivate(true);
-		config.common().objectClass(Aluno.class).cascadeOnDelete(false);;
-		config.common().objectClass(Aluno.class).cascadeOnUpdate(true);;
-		config.common().objectClass(Aluno.class).cascadeOnActivate(true);
-		config.common().objectClass(Telefone.class).cascadeOnDelete(false);;
-		config.common().objectClass(Telefone.class).cascadeOnUpdate(true);;
-		config.common().objectClass(Telefone.class).cascadeOnActivate(true);		
+		config.common().objectClass(Bilhete.class).cascadeOnDelete(false);;
+		config.common().objectClass(Bilhete.class).cascadeOnUpdate(true);;
+		config.common().objectClass(Bilhete.class).cascadeOnActivate(true);
+		config.common().objectClass(Veiculo.class).cascadeOnDelete(false);;
+		config.common().objectClass(Veiculo.class).cascadeOnUpdate(true);;
+		config.common().objectClass(Veiculo.class).cascadeOnActivate(true);
 
-		//Conexão remota 
+		//Conexï¿½o remota 
 		//***************
 		//String ipservidor="localhost";
 		//String ipservidor="10.0.4.43";			// computador do professor (lab)
