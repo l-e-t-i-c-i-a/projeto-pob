@@ -44,6 +44,8 @@ public class Consultar {
             }
             
             
+            
+            
             //Consulta extra
             // Define o intervalo de datas
             LocalDate inicio = LocalDate.of(2024, 11, 20);

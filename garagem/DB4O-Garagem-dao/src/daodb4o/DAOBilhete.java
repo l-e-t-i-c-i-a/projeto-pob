@@ -91,7 +91,7 @@ public class DAOBilhete extends DAO<Bilhete>{
 		    );
 		    return q.execute(); // Retornar a lista de resultados
 		}
-		
+		/*
 		public double calcularTotalArrecadado(LocalDate inicio, LocalDate fim) {
 		    Query q = manager.query();
 		    q.constrain(Bilhete.class); // Classe-alvo
@@ -117,6 +117,40 @@ public class DAOBilhete extends DAO<Bilhete>{
 
 		    // Retorna o total arrecadado
 		    return total;
+		}
+		*/
+		
+		public double calcularTotalArrecadado(LocalDate inicio, LocalDate fim) {
+		    // Consulta todos os veículos no banco de dados
+		    Query qVeiculos = manager.query();
+		    qVeiculos.constrain(Veiculo.class); // Classe dos veículos
+		    List<Veiculo> veiculos = qVeiculos.execute();
+		    
+		    double totalArrecadado = 0.0;
+		    
+		    // Para cada veículo, verifique os bilhetes e some os valores dos bilhetes dentro do intervalo
+		    for (Veiculo veiculo : veiculos) {
+		        // Consulta os bilhetes do veículo
+		        Query qBilhetes = manager.query();
+		        qBilhetes.constrain(Bilhete.class); // Classe dos bilhetes
+		        qBilhetes.descend("veiculo").constrain(veiculo).equal(); // Filtro por veículo
+		        
+		        // Filtro pela dataHoraFinal dos bilhetes dentro do intervalo
+		        qBilhetes.descend("dataHoraFinal")
+		                .constrain(inicio.atStartOfDay()).greater()
+		                .and(qBilhetes.descend("dataHoraFinal")
+		                    .constrain(fim.atTime(23, 59, 59)).smaller());
+
+		        // Executa a consulta e obtém os bilhetes encontrados
+		        List<Bilhete> bilhetes = qBilhetes.execute();
+		        
+		        // Soma o valor arrecadado
+		        for (Bilhete bilhete : bilhetes) {
+		            totalArrecadado += bilhete.getValorPago();
+		        }
+		    }
+		    
+		    return totalArrecadado;
 		}
 		
 		
