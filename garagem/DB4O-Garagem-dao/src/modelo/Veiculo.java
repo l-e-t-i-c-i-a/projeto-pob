@@ -25,6 +25,12 @@ public class Veiculo {
 
     @Override
     public String toString() {
-        return "Veiculo [placa=" + placa + "]";
+        return "Veiculo [placa=" + placa + ", bilhetes=" + bilhetes + "]";
     }
+
+	public void setPlaca(String novaPlaca) {
+		// TODO Auto-generated method stub
+		this.placa = novaPlaca;
+		
+	}
 }

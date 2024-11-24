@@ -34,10 +34,10 @@ public class Bilhete {
                 numeroAleatorio);
 	}
 	
-	private void registrarSaida(LocalDateTime dataHoraFinal) {
-		this.dataHoraFinal = dataHoraFinal;
-		calcularValorPago();
-	}
+	//private void registrarSaida(LocalDateTime dataHoraFinal) {
+	//	this.dataHoraFinal = dataHoraFinal;
+	//	calcularValorPago();
+	//}
 	
 	private void calcularValorPago() {
 		long horas = java.time.Duration.between(dataHoraInicial, dataHoraFinal).toHours();
@@ -56,6 +56,15 @@ public class Bilhete {
 		return dataHoraFinal;
 	}
 	
+	public void setDataHoraFinal(LocalDateTime dataHoraFinal) {
+        this.dataHoraFinal = dataHoraFinal;
+        calcularValorPago();
+    }
+	
+	public String getCodigoDeBarra() {
+		return codigoDeBarra;
+	}
+	
 //	--------------------RELACIONAMENTO--------------------------------
 	public Veiculo getVeiculo() {
 		return veiculo;
@@ -64,7 +73,7 @@ public class Bilhete {
 	
 	@Override
     public String toString() {
-        return "Bilhete [codigoDeBarra=" + codigoDeBarra + ", valorPago=" + valorPago + "]";
+        return "Bilhete [codigoDeBarra=" + codigoDeBarra + ", veiculo=" + veiculo.getPlaca() + ", valorPago=" + valorPago + "]";
     }
 
 	

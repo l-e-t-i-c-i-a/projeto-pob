@@ -6,34 +6,35 @@ package appconsole;
  **********************************/
 
 
-import modelo.Aluno;
-import modelo.Pessoa;
-import modelo.Telefone;
-import regras_negocio.Fachada1;
+
+import java.time.LocalDate;
+
+import modelo.Bilhete;
+import modelo.Veiculo;
+import regras_negocio.Fachada;
 
 public class Listar {
 
 	public Listar(){
 		try {
-			Fachada1.inicializar();
+			Fachada.inicializar();
 
-			System.out.println("*** Listagem de pessoas:");
-			for(Pessoa p : Fachada1.listarPessoas())		
-				System.out.println(p);
+			System.out.println("*** Listagem de bilhetes:");
+			for(Bilhete b : Fachada.listarBilhetes())		
+				System.out.println(b);
 
-			System.out.println("\n*** Listagem de alunos:");
-			for(Aluno a : Fachada1.listarAlunos())		
-				System.out.println(a);
-
-			System.out.println("\n*** Listagem de telefones:");
-			for(Telefone t : Fachada1.listarTelefones())	
-				System.out.println(t);
+			System.out.println("\n*** Listagem de veículos:");
+			for(Veiculo v : Fachada.listarVeiculos())		
+				System.out.println(v);
+			
+		
+			
 
 		} catch (Exception e) {
 			System.out.println(e.getMessage());
 		}
 		
-		Fachada1.finalizar();
+		Fachada.finalizar();
 	}
 
 
