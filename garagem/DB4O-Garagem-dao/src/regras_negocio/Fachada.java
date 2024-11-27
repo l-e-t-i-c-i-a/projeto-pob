@@ -6,6 +6,7 @@ package regras_negocio;
  **********************************/
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.List;
@@ -30,282 +31,263 @@ public class Fachada {
 	public static void finalizar() {
 		DAO.close();
 	}
-
-	public static Veiculo localizarVeiculo(String placa) throws Exception {
+	
+	public static List<Veiculo> listarVeiculos() {
+		List<Veiculo> result = daoveiculo.readAll();
+		return result;
+	}
+	
+	public static List<Bilhete> listarBilhetes() {
+		List<Bilhete> result = daobilhete.readAll();
+		return result;
+	}
+	
+	public static Veiculo criarVeiculo(String placa) throws Exception {
+		DAO.begin();
 		Veiculo v = daoveiculo.read(placa);
-		if (v == null) {
-			throw new Exception("Veiculo inexistente:" + placa);
-		}
-		return v;
-	}
-	public static Aluno localizarBilhete(String codigoDeBarra) throws Exception {
-		Bilhete b = daobilhete.read(codigoDeBarra);
-		if (b == null) {
-			throw new Exception("aluno inexistente:" + codigoDeBarra);
-		}
-		return b;
-	}
-
-	public static void criarPessoa(String nome, String data, List<String> apelidos) throws Exception {
-		DAO.begin();
-		try {
-			LocalDate.parse(data, DateTimeFormatter.ofPattern("dd/MM/yyyy"));
-		} catch (DateTimeParseException e) {
-			DAO.rollback();
-			throw new Exception("formato data invalido:" + data);
-		}
-		Pessoa p = daopessoa.read(nome);
-		if (p != null) {
-			DAO.rollback();
-			throw new Exception("criar pessoa - nome ja existe:" + nome);
-		}
-		p = new Pessoa(nome);
-		p.setDtNascimento(data);
-		p.setApelidos(apelidos);
-		daopessoa.create(p);
+		if (v != null)
+			throw new Exception("Veículo já cadastrado!");
+		Veiculo veiculo = new Veiculo(placa);
+		daoveiculo.create(veiculo);
 		DAO.commit();
+		return veiculo;
+	}
+	
+	public static void criarBilhete(String placa, LocalDateTime dataHoraInicial) throws Exception {
+	    try {
+	        DAO.begin(); // Início da transação
+
+	        // Verificar se o veículo existe
+	        Veiculo veiculo = daoveiculo.read(placa);
+	        if (veiculo == null) {
+	            throw new Exception("Veículo com a placa '" + placa + "' não encontrado!");
+	        }
+
+	        // Verificar se já existe um bilhete ativo (sem data de saída) para este veículo
+	        for (Bilhete b : veiculo.getBilhetes()) {
+	            if (b.getDataHoraFinal() == null) {
+	                throw new Exception("Veículo já possui um bilhete ativo!");
+	            }
+	        }
+
+	        // Criar o bilhete
+	        Bilhete bilhete = new Bilhete(veiculo, dataHoraInicial);
+
+	        // Associar o bilhete ao veículo
+	        veiculo.adicionarBilhete(bilhete);
+
+	        // Persistir o bilhete no banco de dados
+	        daobilhete.create(bilhete);
+
+	        DAO.commit(); // Finalizar a transação com sucesso
+	    } catch (Exception e) {
+	        DAO.rollback(); // Reverter em caso de erro
+	        throw e; // Repassar a exceção
+	    }
 	}
 
-	public static void criarAluno(String nome, String data, List<String>  apelidos, double nota) throws Exception {
-		DAO.begin();
-		try {
-			LocalDate.parse(data, DateTimeFormatter.ofPattern("dd/MM/yyyy"));
-		} catch (DateTimeParseException e) {
-			DAO.rollback();
-			throw new Exception("formato data invalido:" + data);
-		}
+	
+	public static void registrarEntrada(String placa) throws Exception {
+	    Veiculo veiculo = daoveiculo.read(placa);
 
-		Pessoa p = daopessoa.read(nome); // nome de qualquer pessoa
-		if (p != null) {
-			DAO.rollback();
-			throw new Exception("criar aluno - nome ja existe:" + nome);
-		}
+	    if (veiculo == null) {
+	        // Se o veículo não existe, cria um novo veículo
+	        veiculo = criarVeiculo(placa);
+	    } else {
+	        // Verifica se o veículo já está na garagem (bilhete ativo)
+	        for (Bilhete bilhete : veiculo.getBilhetes()) {
+	            if (bilhete.getDataHoraFinal() == null) { // Se o bilhete não tem data de saída, o veículo está na garagem
+	                throw new Exception("Veículo já está registrado na garagem: " + placa);
+	            }
+	        }
+	    }
 
-		Aluno a = new Aluno(nome, nota);
-		a.setDtNascimento(data);
-		a.setApelidos(apelidos);
-		daoaluno.create(a);
-		DAO.commit();
+	    // Criar um novo bilhete de entrada
+	    Bilhete bilhete = new Bilhete(veiculo, LocalDateTime.now());
+	    veiculo.adicionarBilhete(bilhete);
+	    daobilhete.create(bilhete);
 	}
 
-	public static void alterarPessoa(String nome, String data, List<String> apelidos) throws Exception {
-		// permite alterar data, foto e apelidos
-		DAO.begin();
-		Pessoa p = daopessoa.read(nome);
-		if (p == null) {
-			DAO.rollback();
-			throw new Exception("alterar pessoa - pessoa inexistente:" + nome);
-		}
+	
+	/*public static void registrarSaida(String codigoDeBarra) throws Exception {
+        Bilhete bilhete = daobilhete.read(codigoDeBarra);
+        if (bilhete != null) {
+            bilhete.setDataHoraFinal(LocalDateTime.now());
+            daobilhete.update(bilhete);
+        }
+        else {
+        	throw new Exception("Veículo não se encontra na garagem");
+        }
+    }*/
+	
+	public static void registrarSaida(String placa, LocalDateTime horaSaida) throws Exception {
+	    // Verificar se a placa do veículo existe
+	    Veiculo veiculo = daoveiculo.read(placa);
+	    if (veiculo == null) {
+	        throw new Exception("Veículo com a placa '" + placa + "' não encontrado!");
+	    }
 
-		p.setApelidos(apelidos);
-		if (data != null) {
-			try {
-				LocalDate.parse(data, DateTimeFormatter.ofPattern("dd/MM/yyyy"));
-				p.setDtNascimento(data);
-			} catch (DateTimeParseException e) {
-				DAO.rollback();
-				throw new Exception("alterar pessoa - formato data invalido:" + data);
-			}
-		}
+	    // Buscar o bilhete ativo do veículo
+	    Bilhete bilhete = null;
+	    for (Bilhete b : veiculo.getBilhetes()) {
+	        // Procurando bilhete que não tenha dataHoraFinal (bilhete ainda ativo)
+	        if (b.getDataHoraFinal() == null) {
+	            bilhete = b;
+	            break;
+	        }
+	    }
 
-		daopessoa.update(p);
-		DAO.commit();
+	    if (bilhete == null) {
+	        throw new Exception("Veículo não possui um bilhete ativo ou já tem saída registrada.");
+	    }
+
+	    // Verificar se a hora de saída é posterior à hora de entrada
+	    if (horaSaida.isBefore(bilhete.getDataHoraInicial())) {
+	        throw new Exception("A hora de saída não pode ser anterior à hora de entrada.");
+	    }
+
+	    // Registrar a hora de saída no bilhete
+	    bilhete.setDataHoraFinal(horaSaida);
+
+	    // Atualizar o bilhete no banco de dados
+	    daobilhete.update(bilhete);
+	}
+	
+	public static void alterarPlacaVeiculo(String placaAtual, String novaPlaca) throws Exception {
+	    DAO.begin();
+	    Veiculo veiculo = daoveiculo.read(placaAtual);
+	    if (veiculo == null) {
+	        throw new Exception("Veículo não encontrado: " + placaAtual);
+	    }
+
+	    Veiculo veiculoExistente = daoveiculo.read(novaPlaca);
+	    if (veiculoExistente != null) {
+	        throw new Exception("Já existe um veículo com a nova placa: " + novaPlaca);
+	    }
+
+	    veiculo.setPlaca(novaPlaca);
+	    daoveiculo.update(veiculo);
+	    DAO.commit();
+	}
+	
+	public static void alterarBilhete(String codigoDeBarra, LocalDateTime novaDataHoraFinal) throws Exception {
+	    DAO.begin();
+	    Bilhete bilhete = daobilhete.read(codigoDeBarra);
+	    if (bilhete == null) {
+	        throw new Exception("Bilhete não encontrado: " + codigoDeBarra);
+	    }
+	    if (bilhete.getDataHoraFinal() != null) {
+	        throw new Exception("Bilhete já encerrado, não é possível alterar a data de saída!");
+	    }
+
+	    bilhete.setDataHoraFinal(novaDataHoraFinal);
+	    daobilhete.update(bilhete);
+	    DAO.commit();
+	}
+	
+	public static void apagarVeiculo(String placa) throws Exception {
+	    DAO.begin();
+	    
+	    // Verifica se o veículo existe
+	    Veiculo veiculo = daoveiculo.read(placa);
+	    if (veiculo == null) {
+	        throw new Exception("Veículo não encontrado, verifique a placa: " + placa);
+	    }
+
+	    // Verifica se o veículo tem bilhetes ativos (com data de saída nula)
+	    for (Bilhete bilhete : veiculo.getBilhetes()) {
+	        if (bilhete.getDataHoraFinal() == null) {
+	            throw new Exception("Veículo não pode ser excluído enquanto houver bilhete ativo.");
+	        }
+	    }
+
+	    // Apagar os bilhetes associados ao veículo
+	    for (Bilhete bilhete : veiculo.getBilhetes()) {
+	        daobilhete.delete(bilhete);
+	    }
+
+	    // Se o veículo não tiver bilhetes ativos, ele pode ser excluído
+	    daoveiculo.delete(veiculo);
+	    DAO.commit();
 	}
 
-	public static void alterarAluno(String nome, String data, List<String>  apelidos, double nota) throws Exception {
-		// permite alterar data, foto e apelidos
-		DAO.begin();
-		Aluno a = daoaluno.read(nome);
-		if (a == null) {
-			DAO.rollback();
-			throw new Exception("alterar aluno - nome inexistente:" + nome);
-		}
+	
+	public static void apagarBilhete(String codigoDeBarra) throws Exception {
+	    DAO.begin();
+	    // Verifica se o bilhete existe
+	    Bilhete bilhete = daobilhete.read(codigoDeBarra);
+	    if (bilhete == null) {
+	        throw new Exception("Bilhete não encontrado, verifique o código de barra: " + codigoDeBarra);
+	    }
 
-		a.setApelidos(apelidos);
-		if (data != null) {
-			try {
-				LocalDate.parse(data, DateTimeFormatter.ofPattern("dd/MM/yyyy"));
-				a.setDtNascimento(data);
-			} catch (DateTimeParseException e) {
-				DAO.rollback();
-				throw new Exception("alterar aluno - formato data invalido:" + data);
-			}
-		}
-		a.setNota(nota);
-		daopessoa.update(a);
-		DAO.commit();
+	    // Verifica se o bilhete já foi encerrado (se não tem data de saída)
+	    if (bilhete.getDataHoraFinal() == null) {
+	        throw new Exception("Bilhete não pode ser excluído enquanto não foi encerrado.");
+	    }
+
+	    // Se o bilhete estiver encerrado, podemos deletá-lo
+	    daobilhete.delete(bilhete);
+	    DAO.commit();
 	}
 
-	public static void alterarData(String nome, String data) throws Exception {
-		DAO.begin();
-		Pessoa p = daopessoa.read(nome);
-		if (p == null) {
-			DAO.rollback();
-			throw new Exception("alterar pessoa - pessoa inexistente:" + nome);
-		}
 
-		if (data != null) {
-			try {
-				LocalDate.parse(data, DateTimeFormatter.ofPattern("dd/MM/yyyy"));
-				p.setDtNascimento(data);
-			} catch (DateTimeParseException e) {
-				DAO.rollback();
-				throw new Exception("alterar data - formato data invalido:" + data);
-			}
-		}
-
-		daopessoa.update(p);
-		DAO.commit();
+	
+	
+	
+	public static List<Bilhete> listarBilhetesAtivos() {
+	    return daobilhete.readAtivos();
+	}
+	
+	public static int contarVeiculosNaGaragem() {
+	    return (int) daobilhete.countAtivos();
+	}
+	
+	public static List<Bilhete> consultarBilhetesPorPlaca(String placa) throws Exception {
+	    return daobilhete.consultarPlaca(placa);
+	}
+	
+	public static List<Veiculo> listarVeiculosPorTempoPermanencia(long horas) {
+	    return daoveiculo.readByTempoPermanencia(horas);
+	}
+	
+	public static double calcularTotalArrecadado(LocalDate inicio, LocalDate fim) {
+	    return daobilhete.calcularTotalArrecadado(inicio, fim);
+	}
+	
+	public static List<Bilhete> consultarHistoricoVeiculo(String placa) throws Exception {
+		Veiculo veiculo = daoveiculo.read(placa);
+	    if (veiculo == null) {
+	        throw new Exception("Veículo não encontrado: " + placa);
+	    }
+	    return daoveiculo.readHistoricoByPlaca(placa);
+	}
+	
+	public static List<Veiculo> listarVeiculosFrequentes(int vezes) {
+	    return daoveiculo.readByFrequencia(vezes);
 	}
 
-	public static void alterarNome(String nome, String novonome) throws Exception {
-		DAO.begin();
-		Pessoa p = daopessoa.read(nome); // usando chave primaria
-		if (p == null) {
-			DAO.rollback();
-			throw new Exception("alterar nome - nome inexistente:" + nome);
-		}
-		p.setNome(novonome);
-		daopessoa.update(p);
-		DAO.commit();
-	}
 
-	public static void excluirPessoa(String nome) throws Exception {
-		DAO.begin();
-		Pessoa p = daopessoa.read(nome);
-		if (p == null) {
-			DAO.rollback();
-			throw new Exception("excluir pessoa - nome inexistente:" + nome);
-		}
-
-		// desligar a pessoa de seus telefones orfaos e apaga-los do banco
-		for (Telefone t : p.getTelefones()) {
-			daotelefone.delete(t); // deletar o telefone orfao
-		}
-
-		daopessoa.delete(p); // apagar a pessoa
-		DAO.commit();
-	}
-
-	public static void criarTelefone(String nome, String numero) throws Exception {
-		DAO.begin();
-		Pessoa p = daopessoa.read(nome);
-		if (p == null) {
-			DAO.rollback();
-			throw new Exception("criar telefone - nome inexistente" + nome + numero);
-		}
-		Telefone t = daotelefone.read(numero);
-		if (t != null) {
-			DAO.rollback();
-			throw new Exception("criar telefone - numero ja cadastrado:" + numero);
-		}
-		if (numero.isEmpty()) {
-			DAO.rollback();
-			throw new Exception("criar telefone - numero vazio:" + numero);
-		}
-
-		t = new Telefone(numero);
-		p.adicionar(t);
-		daotelefone.create(t);
-		DAO.commit();
-	}
-
-	public static void excluirTelefone(String numero) throws Exception {
-		DAO.begin();
-		Telefone t = daotelefone.read(numero);
-		if (t == null) {
-			DAO.rollback();
-			throw new Exception("excluir telefone - numero inexistente:" + numero);
-		}
-		Pessoa p = t.getPessoa();
-		p.remover(t);
-		t.setPessoa(null);
-		daopessoa.update(p);
-		daotelefone.delete(t);
-		DAO.commit();
-	}
-
-	public static void alterarNumero(String numero, String novonumero) throws Exception {
-		DAO.begin();
-		Telefone t1 = daotelefone.read(numero);
-		if (t1 == null) {
-			DAO.rollback();
-			throw new Exception("alterar numero - numero inexistente:" + numero);
-		}
-		Telefone t2 = daotelefone.read(novonumero);
-		if (t2 != null) {
-			DAO.rollback();
-			throw new Exception("alterar numero - novo numero ja existe:" + novonumero);
-		}
-		if (novonumero.isEmpty()) {
-			DAO.rollback();
-			throw new Exception("alterar numero - novo numero vazio:");
-		}
-
-		t1.setNumero(novonumero); // substituir
-		daotelefone.update(t1);
-		DAO.commit();
-	}
-
-	public static List<Pessoa> listarPessoas() {
-		List<Pessoa> result = daopessoa.readAll();
-		return result;
-	}
-
-	public static List<Aluno> listarAlunos() {
-		List<Aluno> result = daoaluno.readAll();
-		return result;
-	}
-
-	public static List<Telefone> listarTelefones() {
-		List<Telefone> result = daotelefone.readAll();
-		return result;
-	}
-
+	
 	/**********************************************************
 	 * 
 	 * CONSULTAS IMPLEMENTADAS NOS DAO
 	 * 
 	 **********************************************************/
-	public static List<Pessoa> consultarPessoas(String caracteres) {
-		List<Pessoa> result;
-		if (caracteres.isEmpty())
-			result = daopessoa.readAll();
-		else
-			result = daopessoa.readAll(caracteres);
-		return result;
-	}
-
-
-	public static List<Telefone> consultarTelefones(String digitos) {
-		List<Telefone> result;
-		if (digitos.isEmpty())
-			result = daotelefone.readAll();
-		else
-			result = daotelefone.readAll(digitos);
-		return result;
-	}
-
-	public static List<Pessoa> consultarMesNascimento(String mes) {
-		List<Pessoa> result;
-		result = daopessoa.readByMes(mes);
-		return result;
-	}
-
-	public static List<Pessoa> consultarPessoasNTelefones(int n) {
-		List<Pessoa> result;
-		DAO.begin();
-		result = daopessoa.readByNTelefones(n);
-		DAO.commit();
-		return result;
-	}
-
-	public static boolean temTelefoneFixo(String nome) {
-		return daopessoa.temTelefoneFixo(nome);
-	}
-
-	public static List<Pessoa> consultarApelido(String ap) {
-		return daopessoa.consultarApelido(ap);
-	}
+	
+	public static List<Bilhete> consultarBilhetesPorValor(double valor) {
+        return daobilhete.readByValorPagoMaiorQue(valor);
+    }
+	
+	public static List<Veiculo> consultarVeiculosPorDataDeEntrada(LocalDateTime data) {
+        return daoveiculo.readByDataDeEntrada(data);
+    }
+	
+	public static List<Veiculo> consultarVeiculosPorDataDeSaida(LocalDateTime data) {
+        return daoveiculo.readByDataDeSaida(data);
+    }
+	
+	public static List<Veiculo> consultarVeiculosPorQuantidadeBilhetes(int n) {
+        return daoveiculo.readByFrequencia(n);
+    }
 
 }

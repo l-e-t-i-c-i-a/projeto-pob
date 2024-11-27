@@ -5,9 +5,13 @@ package appconsole;
  * Prof. Fausto Ayres
  **********************************/
 
-import modelo.Pessoa;
-import modelo.Telefone;
-import regras_negocio.Fachada1;
+import modelo.Veiculo;
+
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+
+import modelo.Bilhete;
+import regras_negocio.Fachada;
 
 
 public class Consultar {
@@ -15,30 +19,40 @@ public class Consultar {
 	public Consultar(){
 
 		try {
-			Fachada1.inicializar();
-			System.out.println("\npessoas com nome jo ");
-			for(Pessoa p : Fachada1.consultarPessoas("jo")) 
-				System.out.println(p);
+			Fachada.inicializar();
+			
+			// Consulta 1
+			System.out.println("\nBilhetes com valor maior que 10 reais:");
+			for (Bilhete bilhete : Fachada.consultarBilhetesPorValor(6.0)) {
+                System.out.println(bilhete);
+            }
 
-			System.out.println("\ntelefones com numero 987 ");
-			for(Telefone t : Fachada1.consultarTelefones("987")) 
-				System.out.println(t);
+			String dataStr = "24/11/2024"; // Exemplo de data
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+            LocalDate data = LocalDate.parse(dataStr, formatter);
+            // Consulta 2
+            System.out.println("\nVeículos com bilhete pago na data " + dataStr + ":");
+            for (Veiculo veiculo : Fachada.consultarVeiculosPorDataDeSaida(data.atStartOfDay())) {
+                System.out.println(veiculo);
+            }
 
-			System.out.println("\npessoas que nasceram no mes 02");
-			for(Pessoa p : Fachada1.consultarMesNascimento("02")) 
-				System.out.println(p);
-
-			System.out.println("\npessoas com apelido mary");
-			for(Pessoa p : Fachada1.consultarApelido("mary")) 
-				System.out.println(p);
-
-
-			System.out.println("\npessoas com dois telefones " );
-			for(Pessoa p : Fachada1.consultarPessoasNTelefones(2) ) 
-				System.out.println(p);
-
-			System.out.println("\nmaria tem telefone fixo?\n"+
-					Fachada1.temTelefoneFixo("maria") );
+            // Consulta 3
+            int n = 3; // Exemplo de número de bilhetes
+            System.out.println("\nVeículos com mais de " + n + " bilhetes:");
+            for (Veiculo veiculo : Fachada.consultarVeiculosPorQuantidadeBilhetes(n)) {
+                System.out.println(veiculo);
+            }
+            
+            
+            
+            
+            //Consulta extra
+            // Define o intervalo de datas
+            LocalDate inicio = LocalDate.of(2024, 11, 20);
+            LocalDate fim = LocalDate.of(2024, 11, 25);
+            // Chama o método para calcular o total arrecadado
+            double total = Fachada.calcularTotalArrecadado(inicio, fim);
+            System.out.println("Total arrecadado entre " + inicio + " e " + fim + ": R$ " + total);
 
 
 
@@ -46,7 +60,7 @@ public class Consultar {
 			System.out.println(e.getMessage());
 		}
 
-		Fachada1.finalizar();
+		Fachada.finalizar();
 		System.out.println("\nfim do programa");
 	}
 
