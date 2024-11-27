@@ -22,12 +22,12 @@ public class Consultar {
 			Fachada.inicializar();
 			
 			// Consulta 1
-			System.out.println("\nBilhetes com valor maior que 10 reais:");
-			for (Bilhete bilhete : Fachada.consultarBilhetesPorValor(6.0)) {
+			System.out.println("\nBilhetes com valor maior que 2 reais:");
+			for (Bilhete bilhete : Fachada.consultarBilhetesPorValor(2.0)) {
                 System.out.println(bilhete);
             }
 
-			String dataStr = "24/11/2024"; // Exemplo de data
+			String dataStr = "27/11/2024"; // Exemplo de data
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
             LocalDate data = LocalDate.parse(dataStr, formatter);
             // Consulta 2
@@ -49,10 +49,10 @@ public class Consultar {
             //Consulta extra
             // Define o intervalo de datas
             LocalDate inicio = LocalDate.of(2024, 11, 20);
-            LocalDate fim = LocalDate.of(2024, 11, 25);
+            LocalDate fim = LocalDate.of(2024, 11, 28);
             // Chama o método para calcular o total arrecadado
-            double total = Fachada.calcularTotalArrecadado(inicio, fim);
-            System.out.println("Total arrecadado entre " + inicio + " e " + fim + ": R$ " + total);
+            double total = Fachada.calcularTotalArrecadado1(inicio, fim);
+            System.out.println("\nTotal arrecadado entre " + inicio + " e " + fim + ": R$ " + total);
 
 
 

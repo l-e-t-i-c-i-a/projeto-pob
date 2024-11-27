@@ -40,8 +40,11 @@ public class Bilhete {
 	//}
 	
 	private void calcularValorPago() {
-		long horas = java.time.Duration.between(dataHoraInicial, dataHoraFinal).toHours();
-        this.valorPago = Math.ceil(horas) * 2.0;
+		//if (dataHoraFinal == null) {
+	    //    throw new IllegalStateException("Data/hora final não foi definida.");
+	    //}
+	    long horas = java.time.Duration.between(dataHoraInicial, dataHoraFinal).toHours();
+	    this.valorPago = Math.ceil(horas) * 2.0;
 	}
 	
 	public double getValorPago() {
@@ -57,8 +60,11 @@ public class Bilhete {
 	}
 	
 	public void setDataHoraFinal(LocalDateTime dataHoraFinal) {
-        this.dataHoraFinal = dataHoraFinal;
-        calcularValorPago();
+		//if (dataHoraFinal.isBefore(dataHoraInicial)) {
+	    //    throw new IllegalArgumentException("Data/hora final não pode ser anterior à data/hora inicial.");
+	    //}
+	    this.dataHoraFinal = dataHoraFinal;
+	    calcularValorPago();
     }
 	
 	public String getCodigoDeBarra() {
@@ -72,9 +78,12 @@ public class Bilhete {
 	
 	
 	@Override
-    public String toString() {
-        return "Bilhete [codigoDeBarra=" + codigoDeBarra + ", veiculo=" + veiculo.getPlaca() + ", valorPago=" + valorPago + "]";
-    }
+	public String toString() {
+	    return "Bilhete [codigoDeBarra=" + codigoDeBarra + 
+	           ", veiculo=" + (veiculo != null ? veiculo.getPlaca() : "null") + 
+	           ", dataHoraFinal=" + dataHoraFinal + 
+	           ", valorPago=" + valorPago + "]";
+	}
 
 	
 

@@ -5,15 +5,17 @@ package appconsole;
  * Prof. Fausto Ayres
  **********************************/
 
-import regras_negocio.Fachada1;
+import java.time.LocalDateTime;
+
+import regras_negocio.Fachada;
 
 public class Alterar {
 
 	public Alterar(){
-		Fachada1.inicializar();
+		Fachada.inicializar();
 		//altera�ao 1
 		try {
-			Fachada1.alterarPlacaVeiculo("XYZ5678","XYZ55577");
+			Fachada.alterarPlacaVeiculo("XYZ5678","XYZ55577");
 			System.out.println("Placa alterada com sucesso");
 		}
 		catch (Exception e) {
@@ -22,14 +24,14 @@ public class Alterar {
 		
 		//altera�ao 2
 		try {
-			Fachada1.alterarBilhete("988880000", "999999999");
-			System.out.println("alterado numero 988880000 para 999999999");
+			Fachada.alterarBilhete("27112024756", LocalDateTime.of(2024, 11, 27, 5, 0, 0, 0));
+			System.out.println("Bilhete alterado com sucesso");
 		}
 		catch (Exception e) {
 			System.out.println(e.getMessage());
 		}
 		
-		Fachada1.finalizar();
+		Fachada.finalizar();
 		System.out.println("fim do programa");
 	}
 

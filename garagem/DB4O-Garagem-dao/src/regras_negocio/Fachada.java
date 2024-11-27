@@ -151,6 +151,7 @@ public class Fachada {
 
 	    // Atualizar o bilhete no banco de dados
 	    daobilhete.update(bilhete);
+	    daoveiculo.update(veiculo);
 	}
 	
 	public static void alterarPlacaVeiculo(String placaAtual, String novaPlaca) throws Exception {
@@ -252,6 +253,10 @@ public class Fachada {
 	
 	public static double calcularTotalArrecadado(LocalDate inicio, LocalDate fim) {
 	    return daobilhete.calcularTotalArrecadado(inicio, fim);
+	}
+	
+	public static double calcularTotalArrecadado1(LocalDate inicio, LocalDate fim) {
+	    return daobilhete.calcularTotalArrecadado1(inicio, fim);
 	}
 	
 	public static List<Bilhete> consultarHistoricoVeiculo(String placa) throws Exception {
