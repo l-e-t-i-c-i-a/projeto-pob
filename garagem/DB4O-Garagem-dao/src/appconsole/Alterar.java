@@ -13,8 +13,8 @@ public class Alterar {
 		Fachada1.inicializar();
 		//altera�ao 1
 		try {
-			Fachada1.alterarData("joao","01/02/1990");
-			System.out.println("alterado data de nascimento de joao para mes 02");
+			Fachada1.alterarPlacaVeiculo("XYZ5678","XYZ55577");
+			System.out.println("Placa alterada com sucesso");
 		}
 		catch (Exception e) {
 			System.out.println(e.getMessage());
@@ -22,7 +22,7 @@ public class Alterar {
 		
 		//altera�ao 2
 		try {
-			Fachada1.alterarNumero("988880000", "999999999");
+			Fachada1.alterarBilhete("988880000", "999999999");
 			System.out.println("alterado numero 988880000 para 999999999");
 		}
 		catch (Exception e) {
