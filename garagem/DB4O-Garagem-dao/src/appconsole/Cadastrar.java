@@ -41,14 +41,15 @@ public class Cadastrar {
             //Fachada.criarBilhete("XYZ5678", LocalDateTime.of(2024, 11, 21, 9, 0, 0, 0));
             //Fachada.criarBilhete("DEF2345", LocalDateTime.of(2024, 11, 20, 10, 0, 0, 0));
             //Fachada.criarBilhete("GHI6789", LocalDateTime.of(2024, 11, 22, 7, 30, 0, 0));
+            //Fachada.criarBilhete("ABC1234", LocalDateTime.of(2024, 9, 22, 7, 30, 0, 0));
             
             
             
             
             //Registrar saída de veículos
-            //Fachada.registrarSaida("ABC1234", LocalDateTime.of(2024, 11, 27, 16, 0, 0, 0));
-            //Fachada.registrarSaida("DEF2345", LocalDateTime.of(2024, 11, 27, 16, 0, 0, 0));
-            Fachada.registrarSaida("GHI6789", LocalDateTime.of(2024, 11, 27, 16, 0, 0, 0));
+            Fachada.registrarSaida("ABC1234", LocalDateTime.of(2024, 9, 27, 21, 0, 0, 0));
+            //Fachada.registrarSaida("XYZ5678", LocalDateTime.of(2024, 11, 27, 23, 0, 0, 0));
+            //Fachada.registrarSaida("GHI6789", LocalDateTime.of(2024, 9, 27, 23, 0, 0, 0));
 
             // Finaliza a fachada de garagem
             Fachada.finalizar();

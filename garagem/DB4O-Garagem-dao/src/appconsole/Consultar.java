@@ -8,7 +8,9 @@ package appconsole;
 import modelo.Veiculo;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 
 import modelo.Bilhete;
 import regras_negocio.Fachada;
@@ -37,7 +39,7 @@ public class Consultar {
             }
 
             // Consulta 3
-            int n = 3; // Exemplo de número de bilhetes
+            int n = 2; // Exemplo de número de bilhetes
             System.out.println("\nVeículos com mais de " + n + " bilhetes:");
             for (Veiculo veiculo : Fachada.consultarVeiculosPorQuantidadeBilhetes(n)) {
                 System.out.println(veiculo);
@@ -51,8 +53,38 @@ public class Consultar {
             LocalDate inicio = LocalDate.of(2024, 11, 20);
             LocalDate fim = LocalDate.of(2024, 11, 28);
             // Chama o método para calcular o total arrecadado
-            double total = Fachada.calcularTotalArrecadado1(inicio, fim);
+            double total = Fachada.calcularTotalArrecadado(LocalDateTime.of(2024, 9, 21, 0, 0, 0, 0), LocalDateTime.of(2024, 9, 28, 0, 0, 0, 0));
             System.out.println("\nTotal arrecadado entre " + inicio + " e " + fim + ": R$ " + total);
+            
+            
+            String mes9 = "9";  // Outubro, por exemplo
+            double totalMes9 = Fachada.valorArrecadadoPorMes(mes9);
+            System.out.println("\nTotal arrecadado no mês " + mes9 + ": R$ " + totalMes9);
+            
+            String mes11 = "11";  // Outubro, por exemplo
+            double totalMes11 = Fachada.valorArrecadadoPorMes(mes11);
+            System.out.println("Total arrecadado no mês " + mes11 + ": R$ " + totalMes11);
+            
+            
+            
+            
+            
+            
+            /*
+            List<Bilhete >bilhetesPorPeriodo = Fachada.listarBilhetesPorPeriodo(LocalDateTime.of(2024, 11, 20, 0, 0, 0),LocalDateTime.of(2024, 11, 28, 21, 0, 0));
+            System.out.println("Bilhetes entre: " +LocalDateTime.of(2024, 11, 20, 0, 0, 0, 0) + "e" + LocalDateTime.of(2024, 11, 20, 0, 0, 0, 0)+ "=" + bilhetesPorPeriodo);
+            
+            
+            List<Bilhete> bilhetesTodos = Fachada.listarBilhetes1();
+            System.out.println("\nTodos os bilhetes teste:" + bilhetesTodos);
+            
+            LocalDateTime datafinal = Fachada.mostrarDataHoraFinal("27112024661");
+            System.out.println("Hora final:" + datafinal);*/
+
+            
+            
+            
+            
 
 
 

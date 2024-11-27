@@ -1,8 +1,12 @@
 package daodb4o;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
 
+import com.db4o.ObjectSet;
+import com.db4o.query.Candidate;
+import com.db4o.query.Evaluation;
 import com.db4o.query.Query;
 
 import modelo.Bilhete;
@@ -129,15 +133,30 @@ public class DAOBilhete extends DAO<Bilhete>{
 		    q.constrain(Bilhete.class);
 
 		    // Filtro por dataHoraFinal dentro do intervalo
-		    q.descend("dataHoraFinal").constrain(inicioDateTime).greater().and(
-		        q.descend("dataHoraFinal").constrain(fimDateTime).smaller());
+		    q.descend("dataHoraFinal").constrain(inicioDateTime).greater().and(q.descend("dataHoraFinal").constrain(fimDateTime).smaller());
+		    //q.descend("dataHoraFinal").constrain(inicioDateTime).greater();
+		    //List<Bilhete> bilhetes1 = q.execute();
+		    
+		    //q.descend("dataHoraFinal").constrain(fimDateTime).smaller();
+		    //List<Bilhete> bilhetes2 = q.execute();
 
 		    // Executa a consulta com os filtros combinados
 		    List<Bilhete> bilhetes = q.execute();
 		    
 		    // Exibe os bilhetes encontrados (debug)
-		    System.out.println("Bilhetes encontrados: " + bilhetes);
-		    System.out.println("todos bilhetes:" + listarBilhetes());
+		    //System.out.println("Bilhetes encontrados: " + bilhetes);
+		    //System.out.println("todos bilhetes:" + listarBilhetes());
+		    
+		 // Calcula a soma dos valores pagos dos bilhetes encontrados
+		    //double total1 = 0.0;
+		    //for (Bilhete bilhete : bilhetes1) {
+		    //    total1 += bilhete.getValorPago();
+		    //}
+		    
+		    //double total2 = 0.0;
+		    //for (Bilhete bilhete : bilhetes2) {
+		    //    total2 += bilhete.getValorPago();
+		    //}
 
 		    // Calcula a soma dos valores pagos dos bilhetes encontrados
 		    double total = 0.0;
@@ -147,6 +166,16 @@ public class DAOBilhete extends DAO<Bilhete>{
 
 		    return total;
 		}
+		
+		/*
+		public LocalDateTime mostrarHoraFinal(String codigodebarra) {
+			Query q = manager.query();
+			q.constrain(Bilhete.class);
+			q.descend("codigodebarra").constrain(codigodebarra).equal();
+			Bilhete resultado = (Bilhete) q.execute();
+			
+			return resultado.getDataHoraFinal();
+		}*/
 		
 		public double calcularTotalArrecadado(LocalDate inicio, LocalDate fim) {
 		    // Consulta todos os veículos no banco de dados
@@ -189,6 +218,36 @@ public class DAOBilhete extends DAO<Bilhete>{
 		return bilhetes;
 		}
 		
+		public double calcularTotalArrecadadoPorMes(String mes) {
+		    double totalArrecadado = 0.0;
+		    
+		    // Consulta todos os bilhetes salvos no banco de dados
+		    Query q = manager.query();
+		    q.constrain(Bilhete.class);  // Classe Bilhete
+		    List<Bilhete> bilhetes = q.execute();
+		    
+		    // Itera sobre todos os bilhetes
+		    for (Bilhete bilhete : bilhetes) {
+		        // Verifica se a dataHoraFinal do bilhete não é nula
+		        if (bilhete.getDataHoraFinal() != null) {
+		            // Obtém o mês da dataHoraFinal
+		            int mesFinal = bilhete.getDataHoraFinal().getMonthValue();
+		            
+		            // Se o mês da dataHoraFinal for o mesmo do mês passado como parâmetro
+		            if (mesFinal == Integer.parseInt(mes)) {
+		                // Soma o valor pago no bilhete
+		                totalArrecadado += bilhete.getValorPago();
+		            }
+		        }
+		    }
+		    
+		    // Retorna o total arrecadado para o mês especificado
+		    return totalArrecadado;
+		}
+		
+		
+		
+		
 
 
 		
@@ -206,7 +265,44 @@ public class DAOBilhete extends DAO<Bilhete>{
 	//		candidate.include( p.getTelefones().size() == n );
 	//	}
 	//}
+		public double calcularTotalArrecadadoPorPeriodo(LocalDateTime inicio, LocalDateTime fim) {
+	        double totalArrecadado = 0.0;
 
+	        // Cria uma consulta para todos os bilhetes
+	        Query q = manager.query();
+	        q.constrain(Bilhete.class);
+
+	        // Aplica um filtro baseado na dataHoraFinal
+	        q.constrain(new Evaluation() {
+	            @Override
+	            public void evaluate(Candidate candidate) {
+	                Bilhete bilhete = (Bilhete) candidate.getObject();
+	                LocalDateTime dataHoraFinal = bilhete.getDataHoraFinal();
+
+	                // Verifica se a dataHoraFinal do bilhete está dentro do intervalo
+	                if (dataHoraFinal != null) {
+	                    if ((dataHoraFinal.isEqual(inicio) || dataHoraFinal.isAfter(inicio)) &&
+	                        (dataHoraFinal.isEqual(fim) || dataHoraFinal.isBefore(fim))) {
+	                        candidate.include(true);  // Inclui no resultado
+	                    } else {
+	                        candidate.include(false);  // Exclui do resultado
+	                    }
+	                } else {
+	                    candidate.include(false);  // Exclui bilhetes com dataHoraFinal nula
+	                }
+	            }
+	        });
+
+	        // Executa a consulta
+	        List<Bilhete> bilhetes = q.execute();
+
+	        // Soma os valores pagos dos bilhetes encontrados
+	        for (Bilhete bilhete : bilhetes) {
+	            totalArrecadado += bilhete.getValorPago();
+	        }
+
+	        return totalArrecadado;
+	    }
 
 
 }

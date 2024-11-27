@@ -60,9 +60,9 @@ public class Bilhete {
 	}
 	
 	public void setDataHoraFinal(LocalDateTime dataHoraFinal) {
-		//if (dataHoraFinal.isBefore(dataHoraInicial)) {
-	    //    throw new IllegalArgumentException("Data/hora final não pode ser anterior à data/hora inicial.");
-	    //}
+		if (dataHoraFinal.isBefore(dataHoraInicial)) {
+	        throw new IllegalArgumentException("Data/hora final não pode ser anterior à data/hora inicial.");
+	    }
 	    this.dataHoraFinal = dataHoraFinal;
 	    calcularValorPago();
     }
@@ -81,6 +81,7 @@ public class Bilhete {
 	public String toString() {
 	    return "Bilhete [codigoDeBarra=" + codigoDeBarra + 
 	           ", veiculo=" + (veiculo != null ? veiculo.getPlaca() : "null") + 
+	           ", dataHoraInicial=" + dataHoraInicial +
 	           ", dataHoraFinal=" + dataHoraFinal + 
 	           ", valorPago=" + valorPago + "]";
 	}

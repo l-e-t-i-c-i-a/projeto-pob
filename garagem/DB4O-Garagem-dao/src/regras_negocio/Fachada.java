@@ -42,6 +42,11 @@ public class Fachada {
 		return result;
 	}
 	
+	public static List<Bilhete> listarBilhetes1() {
+		List<Bilhete> result = daobilhete.listarBilhetes();
+		return result;
+	}
+	
 	public static Veiculo criarVeiculo(String placa) throws Exception {
 		DAO.begin();
 		Veiculo v = daoveiculo.read(placa);
@@ -251,8 +256,8 @@ public class Fachada {
 	    return daoveiculo.readByTempoPermanencia(horas);
 	}
 	
-	public static double calcularTotalArrecadado(LocalDate inicio, LocalDate fim) {
-	    return daobilhete.calcularTotalArrecadado(inicio, fim);
+	public static double calcularTotalArrecadado(LocalDateTime inicio, LocalDateTime fim) {
+	    return daobilhete.calcularTotalArrecadadoPorPeriodo(inicio, fim);
 	}
 	
 	public static double calcularTotalArrecadado1(LocalDate inicio, LocalDate fim) {
@@ -270,6 +275,21 @@ public class Fachada {
 	public static List<Veiculo> listarVeiculosFrequentes(int vezes) {
 	    return daoveiculo.readByFrequencia(vezes);
 	}
+	
+	public static List<Bilhete> listarBilhetesPorPeriodo(LocalDateTime inicio, LocalDateTime fim) {
+	    return daobilhete.readByPeriodo(inicio, fim);
+	}
+	
+	public static double valorArrecadadoPorMes(String mes) {
+		return daobilhete.calcularTotalArrecadadoPorMes(mes);
+	}
+	
+	
+	
+	/*
+	public static LocalDateTime mostrarDataHoraFinal(String codigodebarra) {
+		return daobilhete.mostrarHoraFinal(codigodebarra);
+	}*/
 
 
 	

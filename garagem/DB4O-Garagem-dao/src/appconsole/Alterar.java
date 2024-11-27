@@ -15,8 +15,8 @@ public class Alterar {
 		Fachada.inicializar();
 		//altera�ao 1
 		try {
-			Fachada.alterarPlacaVeiculo("XYZ5678","XYZ55577");
-			System.out.println("Placa alterada com sucesso");
+			//Fachada.alterarPlacaVeiculo("XYZ5678","XYZ55577");
+			//System.out.println("Placa alterada com sucesso");
 		}
 		catch (Exception e) {
 			System.out.println(e.getMessage());
@@ -24,7 +24,7 @@ public class Alterar {
 		
 		//altera�ao 2
 		try {
-			Fachada.alterarBilhete("27112024756", LocalDateTime.of(2024, 11, 27, 5, 0, 0, 0));
+			Fachada.alterarBilhete("27112024275", LocalDateTime.of(2024, 11, 27, 21, 0, 0, 0));
 			System.out.println("Bilhete alterado com sucesso");
 		}
 		catch (Exception e) {
