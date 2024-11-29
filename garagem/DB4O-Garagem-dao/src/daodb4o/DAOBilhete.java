@@ -24,6 +24,13 @@ public class DAOBilhete extends DAO<Bilhete>{
 			return null;
 	}
 	
+	public List<Bilhete> readAllCodigos(String codigo) {
+		Query q = manager.query();
+		q.constrain(Bilhete.class);
+		q.descend("codigoDeBarra").constrain(codigo).like();
+		return q.execute(); 
+	}
+	
 		/**********************************************************
 		 * 
 		 * TODAS AS CONSULTAS DE BILHETE

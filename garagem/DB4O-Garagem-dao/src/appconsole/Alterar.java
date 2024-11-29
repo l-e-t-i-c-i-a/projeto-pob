@@ -24,7 +24,7 @@ public class Alterar {
 		
 		//altera�ao 2
 		try {
-			Fachada.alterarBilhete("27112024275", LocalDateTime.of(2024, 11, 27, 21, 0, 0, 0));
+			Fachada.alterarBilhete("27112024089", LocalDateTime.of(2024, 11, 29, 21, 0, 0, 0));
 			System.out.println("Bilhete alterado com sucesso");
 		}
 		catch (Exception e) {

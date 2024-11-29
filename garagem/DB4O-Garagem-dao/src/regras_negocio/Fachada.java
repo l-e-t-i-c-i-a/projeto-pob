@@ -32,6 +32,14 @@ public class Fachada {
 		DAO.close();
 	}
 	
+	public static Bilhete localizarBilhete(String codigo) throws Exception {
+		Bilhete b = daobilhete.read(codigo);
+		if (b == null) {
+			throw new Exception("bilhete inexistente:" + codigo);
+		}
+		return b;
+	}
+	
 	public static List<Veiculo> listarVeiculos() {
 		List<Veiculo> result = daoveiculo.readAll();
 		return result;
@@ -290,6 +298,16 @@ public class Fachada {
 	public static LocalDateTime mostrarDataHoraFinal(String codigodebarra) {
 		return daobilhete.mostrarHoraFinal(codigodebarra);
 	}*/
+	
+	
+	public static List<Bilhete> consultarBilhetes(String codigo) {
+		List<Bilhete> result;
+		if (codigo.isEmpty())
+			result = daobilhete.readAll();
+		else
+			result = daobilhete.readAllCodigos(codigo);
+		return result;
+	}
 
 
 	
