@@ -190,9 +190,9 @@ public class Fachada {
 	    if (bilhete == null) {
 	        throw new Exception("Bilhete não encontrado: " + codigoDeBarra);
 	    }
-	    if (bilhete.getDataHoraFinal() != null) {
+	    /*if (bilhete.getDataHoraFinal() != null) {
 	        throw new Exception("Bilhete já encerrado, não é possível alterar a data de saída!");
-	    }
+	    }*/
 
 	    bilhete.setDataHoraFinal(novaDataHoraFinal);
 	    daobilhete.update(bilhete);
@@ -306,6 +306,15 @@ public class Fachada {
 			result = daobilhete.readAll();
 		else
 			result = daobilhete.readAllCodigos(codigo);
+		return result;
+	}
+	
+	public static List<Veiculo> consultarVeiculos(String placa) {
+		List<Veiculo> result;
+		if (placa.isEmpty())
+			result = daoveiculo.readAll();
+		else
+			result = daoveiculo.readAllPlacas(placa);
 		return result;
 	}
 

@@ -39,6 +39,13 @@ public class DAOVeiculo extends DAO<Veiculo>{
 	    return q.execute();
 	}
 	
+	public List<Veiculo> readAllPlacas(String placa) {
+		Query q = manager.query();
+		q.constrain(Veiculo.class);
+		q.descend("placa").constrain(placa).like();
+		return q.execute(); 
+	}
+	
 	public List<Bilhete> readHistoricoByPlaca(String placa) {
 	    Query q = manager.query();
 	    q.constrain(Veiculo.class); // Classe-alvo

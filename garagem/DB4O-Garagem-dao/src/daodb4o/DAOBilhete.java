@@ -221,7 +221,7 @@ public class DAOBilhete extends DAO<Bilhete>{
 		Query q = manager.query();
 		q.constrain(Bilhete.class);
 		List<Bilhete> bilhetes = q.execute();
-		System.out.println("Todos os bilhetes: " + bilhetes);
+		//System.out.println("Todos os bilhetes: " + bilhetes);
 		return bilhetes;
 		}
 		

@@ -76,7 +76,7 @@ public class TelaPrincipalGaragem {
 		mnVeiculo.addMouseListener(new MouseAdapter() {
 			@Override
 			public void mouseClicked(MouseEvent e) {
-				new TelaPessoa();
+				new TelaVeiculo();
 			}
 		});
 		menuBar.add(mnVeiculo);

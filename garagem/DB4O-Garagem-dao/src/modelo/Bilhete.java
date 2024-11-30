@@ -44,7 +44,8 @@ public class Bilhete {
 	    //    throw new IllegalStateException("Data/hora final não foi definida.");
 	    //}
 	    long horas = java.time.Duration.between(dataHoraInicial, dataHoraFinal).toHours();
-	    this.valorPago = Math.ceil(horas) * 2.0;
+	    this.valorPago = Math.max(2.0, Math.ceil(horas) * 2.0);
+	    
 	}
 	
 	public double getValorPago() {

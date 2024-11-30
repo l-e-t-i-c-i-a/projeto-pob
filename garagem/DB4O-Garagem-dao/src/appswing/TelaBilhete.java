@@ -14,6 +14,7 @@ import java.awt.event.MouseEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 import javax.swing.JButton;
@@ -71,7 +72,7 @@ public class TelaBilhete {
 		
 		frame.setTitle("Bilhetes");
 		//frame.setBounds(100, 100, 378, 373);
-		frame.setBounds(100, 100, 600, 500); // Aumentando o tamanho da janela
+		frame.setBounds(100, 100, 750, 500); // Aumentando o tamanho da janela
 		frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		frame.getContentPane().setLayout(null);
 		frame.addWindowListener(new WindowAdapter() {
@@ -90,6 +91,7 @@ public class TelaBilhete {
 		scrollPane = new JScrollPane();
 		//scrollPane.setBounds(26, 44, 315, 152);
 		scrollPane.setBounds(26, 44, 540, 300); // Ajustando o tamanho do painel de rolagem
+		
 
 		frame.getContentPane().add(scrollPane);
 
@@ -105,20 +107,32 @@ public class TelaBilhete {
 			@Override
 			public void mouseClicked(MouseEvent e) {
 				try {
-					if (table.getSelectedRow() >= 0) {
-						//pegar o nome selecionado
-						String codigo = (String) table.getValueAt( table.getSelectedRow(), 1);
-						String placa = (String) table.getValueAt( table.getSelectedRow(), 2);
-						String saida = (String) table.getValueAt( table.getSelectedRow(), 4);
-						textField_Saida.setText(saida);
-						textField_placa.setText(placa);
-						textField_codigo1.setText(codigo);
-						label.setText("");
-					}
-				}
-				catch(Exception erro) {
-					label.setText(erro.getMessage());
-				}
+		            if (table.getSelectedRow() >= 0) {
+		                // Obtenha os valores das células
+		                String codigo = (String) table.getValueAt(table.getSelectedRow(), 0);
+		                String placa = (String) table.getValueAt(table.getSelectedRow(), 1);
+		                
+		                // Obtenha o valor da saída (LocalDateTime)
+		                Object saidaObj = table.getValueAt(table.getSelectedRow(), 3);
+		                String saida = "";
+		                
+		                if (saidaObj instanceof LocalDateTime) {
+		                    LocalDateTime saidaLocalDateTime = (LocalDateTime) saidaObj;
+		                    // Formate para String
+		                    //DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
+		                    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
+		                    saida = saidaLocalDateTime.format(formatter);
+		                }
+
+		                // Atualize os campos de texto
+		                textField_Saida.setText(saida);
+		                textField_placa.setText(placa);
+		                textField_codigo1.setText(codigo);
+		                label.setText(""); // Limpe o label de erro
+		            }
+		        } catch (Exception erro) {
+		            label.setText(erro.getMessage()); // Mostre a mensagem de erro no label
+		        }
 			}
 		});
 		table.setGridColor(Color.BLACK);
@@ -160,12 +174,12 @@ public class TelaBilhete {
 				}
 			}
 		});
-		button_Apagar.setBounds(380, 412, 80, 23);
+		button_Apagar.setBounds(486, 413, 80, 23);
 		frame.getContentPane().add(button_Apagar);
 
 		label = new JLabel("");
 		label.setForeground(Color.RED);
-		label.setBounds(26, 447, 326, 14);
+		label.setBounds(26, 447, 678, 14);
 		frame.getContentPane().add(label);
 
 		button_Listar = new JButton("Listar");
@@ -206,7 +220,7 @@ public class TelaBilhete {
 
 		textField_Saida = new JTextField();
 		textField_Saida.setColumns(10);
-		textField_Saida.setBounds(118, 384, 95, 20);
+		textField_Saida.setBounds(118, 384, 150, 20);
 		frame.getContentPane().add(textField_Saida);
 
 		textField_placa = new JTextField();
@@ -243,14 +257,14 @@ public class TelaBilhete {
 		btnAtualizar.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				try {
-					if(textField_Saida.getText().isEmpty()) {
-						label.setText("Saída Vazia");
+					if(textField_NovaSaida.getText().isEmpty()) {
+						label.setText("Nova saída vazia");
 						return;
 					}
-					String saida = textField_placa.getText();
+					String codigo = textField_codigo1.getText();
 					String novaSaida = textField_NovaSaida.getText();
-					Fachada.alterarBilhete(saida, LocalDateTime.parse(novaSaida));
-					label.setText("telefone atualizado");
+					Fachada.alterarBilhete(codigo, LocalDateTime.parse(novaSaida));
+					label.setText("bilhete atualizado");
 					listagem();
 				}
 				catch(Exception ex) {
@@ -265,23 +279,23 @@ public class TelaBilhete {
 		lblNovaDatahoraSaida = new JLabel("Nova DataHora Saída:");
 		lblNovaDatahoraSaida.setHorizontalAlignment(SwingConstants.LEFT);
 		lblNovaDatahoraSaida.setFont(new Font("Tahoma", Font.PLAIN, 12));
-		lblNovaDatahoraSaida.setBounds(239, 387, 123, 14);
+		lblNovaDatahoraSaida.setBounds(289, 386, 123, 14);
 		frame.getContentPane().add(lblNovaDatahoraSaida);
 
 		textField_NovaSaida = new JTextField();
 		textField_NovaSaida.setColumns(10);
-		textField_NovaSaida.setBounds(365, 384, 95, 20);
+		textField_NovaSaida.setBounds(416, 384, 150, 20);
 		frame.getContentPane().add(textField_NovaSaida);
 		
 		JLabel lblCodigo1 = new JLabel("codigo:");
 		lblCodigo1.setHorizontalAlignment(SwingConstants.LEFT);
 		lblCodigo1.setFont(new Font("Tahoma", Font.PLAIN, 12));
-		lblCodigo1.setBounds(306, 364, 46, 14);
+		lblCodigo1.setBounds(415, 364, 46, 14);
 		frame.getContentPane().add(lblCodigo1);
 		
 		textField_codigo1 = new JTextField();
 		textField_codigo1.setColumns(10);
-		textField_codigo1.setBounds(365, 362, 95, 20);
+		textField_codigo1.setBounds(471, 362, 95, 20);
 		frame.getContentPane().add(textField_codigo1);
 
 		frame.setVisible(true);
@@ -297,25 +311,31 @@ public class TelaBilhete {
 			model.addColumn("Placa");
 			model.addColumn("Entrada");
 			model.addColumn("Saída");
+			model.addColumn("Valor Pago");
 
-			for(Bilhete b : lista) {
-				if(b.getVeiculo() != null)
-					model.addRow(new Object[]{b.getCodigoDeBarra(),  b.getVeiculo().getPlaca(), b.getDataHoraInicial() , b.getDataHoraFinal()});
-				else
-					model.addRow(new Object[]{b.getCodigoDeBarra(),  b.getVeiculo().getPlaca(), b.getDataHoraInicial() , b.getDataHoraFinal()});
+			for (Bilhete b : lista) {
+			    String valorPago = String.format("%.2f", b.getValorPago()); // Formata o valor pago como string
+			    model.addRow(new Object[]{
+			        b.getCodigoDeBarra(),
+			        b.getVeiculo() != null ? b.getVeiculo().getPlaca() : "",
+			        b.getDataHoraInicial(),
+			        b.getDataHoraFinal(),
+			        valorPago // Adicione o valor pago na linha
+			    });
 			}
-			lblSelecioneUmBilhete.setText("resultados: "+lista.size()+ " Bilhetes  - selecione uma linha para editar");
+	        lblSelecioneUmBilhete.setText("resultados: " + lista.size() + " Bilhetes - selecione uma linha para editar");
 			
 			// redimensionar a coluna 0
 			table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF); // desabilita
-			table.getColumnModel().getColumn(0).setMaxWidth(100); // coluna codigo
+			table.getColumnModel().getColumn(0).setMaxWidth(130); // coluna codigo
 			table.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS); // desabilita
 			
 			// Ajustar larguras das colunas
-			table.getColumnModel().getColumn(0).setPreferredWidth(100); // Codigo
+			table.getColumnModel().getColumn(0).setPreferredWidth(130); // Codigo
 			table.getColumnModel().getColumn(1).setPreferredWidth(100); // Placa
-			table.getColumnModel().getColumn(2).setPreferredWidth(200); // Entrada
-			table.getColumnModel().getColumn(3).setPreferredWidth(200); // Saída
+			table.getColumnModel().getColumn(2).setPreferredWidth(220); // Entrada
+			table.getColumnModel().getColumn(3).setPreferredWidth(220); // Saída
+			table.getColumnModel().getColumn(4).setPreferredWidth(100); // Valor Pago
 		}
 		catch(Exception erro){
 			label.setText(erro.getMessage());

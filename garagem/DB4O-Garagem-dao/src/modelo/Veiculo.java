@@ -25,7 +25,18 @@ public class Veiculo {
 
     @Override
     public String toString() {
-        return "Veiculo [placa=" + placa + ", bilhetes=" + bilhetes + "]";
+        if (bilhetes.isEmpty()) {
+            return "Veiculo [placa=" + placa + ", bilhetes=Sem bilhetes]";
+        }
+
+        StringBuilder bilhetesString = new StringBuilder();
+        for (Bilhete bilhete : bilhetes) {
+            bilhetesString.append(bilhete.getCodigoDeBarra()).append(", ");
+        }
+        // Remover a última vírgula e espaço
+        bilhetesString.setLength(bilhetesString.length() - 2);
+
+        return "Veiculo [placa=" + placa + ", bilhetes=" + bilhetesString + "]";
     }
 
 	public void setPlaca(String novaPlaca) {

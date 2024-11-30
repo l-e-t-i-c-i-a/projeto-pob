@@ -32,7 +32,7 @@ public class Cadastrar {
             //Registrar entrada de veículos
             //Fachada.registrarEntrada("ABC1234");
             //Fachada.registrarEntrada("XYZ5678");
-            //Fachada.registrarEntrada("GHI6789");
+            Fachada.registrarEntrada("GHI6789");
 
             System.out.println("Cadastrando bilhetes...");
 
@@ -47,7 +47,7 @@ public class Cadastrar {
             
             
             //Registrar saída de veículos
-            Fachada.registrarSaida("ABC1234", LocalDateTime.of(2024, 9, 27, 21, 0, 0, 0));
+            //Fachada.registrarSaida("ABC1234", LocalDateTime.of(2024, 9, 27, 21, 0, 0, 0));
             //Fachada.registrarSaida("XYZ5678", LocalDateTime.of(2024, 11, 27, 23, 0, 0, 0));
             //Fachada.registrarSaida("GHI6789", LocalDateTime.of(2024, 9, 27, 23, 0, 0, 0));
 

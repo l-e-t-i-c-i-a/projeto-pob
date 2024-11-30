@@ -12,7 +12,10 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
@@ -27,9 +30,9 @@ import javax.swing.ListSelectionModel;
 import javax.swing.border.LineBorder;
 import javax.swing.table.DefaultTableModel;
 
-import modelo.Pessoa;
-import modelo.Telefone;
-import regras_negocio.Fachada1;
+import modelo.Veiculo;
+import modelo.Bilhete;
+import regras_negocio.Fachada;
 
 public class TelaConsulta {
 	private JDialog frame;
@@ -79,11 +82,11 @@ public class TelaConsulta {
 		frame.addWindowListener(new WindowAdapter() {
 			@Override
 			public void windowOpened(WindowEvent e) {
-				Fachada1.inicializar();
+				Fachada.inicializar();
 			}
 			@Override
 			public void windowClosing(WindowEvent e) {
-				Fachada1.finalizar();
+				Fachada.finalizar();
 			}
 		});
 
@@ -130,20 +133,23 @@ public class TelaConsulta {
 					label_4.setText("");
 					switch(index) {
 					case 0: 
-						String mes = JOptionPane.showInputDialog("digite o mes");
-						List<Pessoa> resultado1 = Fachada1.consultarMesNascimento(mes) ;
-						listagemPessoa(resultado1);
+						String valorStr = JOptionPane.showInputDialog("digite o valor");
+						double valor = Double.parseDouble(valorStr);
+						List<Bilhete> resultado1 = Fachada.consultarBilhetesPorValor(valor) ;
+						listagemBilhete(resultado1);
 						break;
 					case 1: 
-						String modelo = JOptionPane.showInputDialog("digite o apelido");
-						List<Pessoa> resultado2 = Fachada1.consultarApelido(modelo);
-						listagemPessoa(resultado2);		
+						String dataStr = JOptionPane.showInputDialog("digite a data");
+						DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+			            LocalDate data = LocalDate.parse(dataStr, formatter);
+						List<Veiculo> resultado2 = Fachada.consultarVeiculosPorDataDeSaida(data.atStartOfDay());
+						listagemVeiculo(resultado2);		
 						break;
 					case 2: 
-						String n = JOptionPane.showInputDialog("digite N");
+						String n = JOptionPane.showInputDialog("digite X");
 						int numero = Integer.parseInt(n);
-						List<Pessoa> resultado3 = Fachada1.consultarPessoasNTelefones(numero);
-						listagemPessoa(resultado3);
+						List<Veiculo> resultado3 = Fachada.consultarVeiculosPorQuantidadeBilhetes(numero);
+						listagemVeiculo(resultado3);
 						break;
 
 					}
@@ -156,13 +162,92 @@ public class TelaConsulta {
 
 		comboBox = new JComboBox<String>();
 		comboBox.setToolTipText("selecione a consulta");
-		comboBox.setModel(new DefaultComboBoxModel<>(
-				new String[] {"pessoas que nasceram no mes X","pessoa com apelido X", "pessoas com N telefones" }));
+		comboBox.setModel(new DefaultComboBoxModel(new String[] {"bilhetes com valor maior que X", "veiculos com valor pago na data X", "veiculos com mais de X bilhetes"}));
 		comboBox.setBounds(21, 10, 513, 22);
 		frame.getContentPane().add(comboBox);
 	}
+	
+	public void listagemBilhete(List<Bilhete> lista) {
+	    try {
+	        // Criando o modelo da tabela
+	        DefaultTableModel model = new DefaultTableModel();
+	        table.setModel(model);
 
-	public void listagemPessoa(List<Pessoa> lista) {
+	        // Adicionando as colunas na tabela
+	        model.addColumn("Código de Barra");
+	        model.addColumn("Placa do Veículo");
+	        model.addColumn("Data e Hora de Entrada");
+	        model.addColumn("Data e Hora de Saída");
+	        model.addColumn("Valor Pago");
+
+	        // Preenchendo as linhas da tabela com os dados dos bilhetes
+	        for (Bilhete b : lista) {
+	            String codigoDeBarra = b.getCodigoDeBarra();
+	            String placaVeiculo = b.getVeiculo() != null ? b.getVeiculo().getPlaca() : "N/A"; // Supondo que o veículo tenha a placa
+	            String dataHoraInicial = b.getDataHoraInicial().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm"));
+	            String dataHoraFinal = b.getDataHoraFinal() != null ? b.getDataHoraFinal().format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm")) : "N/A";
+	            double valorPago = b.getValorPago();
+
+	            // Adicionando a linha na tabela
+	            model.addRow(new Object[] { codigoDeBarra, placaVeiculo, dataHoraInicial, dataHoraFinal, valorPago });
+	        }
+
+	        // Ajustando a largura das colunas (se necessário)
+	        table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF);
+	        table.getColumnModel().getColumn(0).setMaxWidth(120); // Coluna código de barra
+	        table.getColumnModel().getColumn(1).setMinWidth(100); // Coluna placa do veículo
+	        table.getColumnModel().getColumn(2).setMinWidth(150); // Coluna data de entrada
+	        table.getColumnModel().getColumn(3).setMinWidth(150); // Coluna data de saída
+	        table.getColumnModel().getColumn(4).setMinWidth(100); // Coluna valor pago
+	        table.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS); // Habilita redimensionamento automático
+
+	    } catch (Exception erro) {
+	        label.setText("Erro ao listar bilhetes: " + erro.getMessage());
+	    }
+	}
+
+	
+	public void listagemVeiculo(List<Veiculo> lista) {
+	    try {
+	        // Objeto model contém todas as linhas e colunas da tabela
+	        DefaultTableModel model = new DefaultTableModel();
+	        table.setModel(model);
+
+	        // Criar as colunas (Placa, Bilhetes) da tabela
+	        model.addColumn("Placa");
+	        model.addColumn("Bilhetes");
+
+	        // Criar as linhas da tabela
+	        String bilhetes;
+	        for (Veiculo v : lista) {
+	            // Obter a placa do veículo
+	            String placa = v.getPlaca();
+
+	            // Obter os bilhetes associados, transformando em um string formatada
+	            bilhetes = v.getBilhetes().isEmpty() 
+	                ? "Sem bilhetes" 
+	                : v.getBilhetes().stream()
+	                    .map(b -> b.getCodigoDeBarra()) // Obter apenas o código de barras do bilhete
+	                    .collect(Collectors.joining(", "));
+
+	            // Adicionar linha na tabela
+	            model.addRow(new Object[] { placa, bilhetes });
+	        }
+
+	        // Redimensionar as colunas
+	        table.setAutoResizeMode(JTable.AUTO_RESIZE_OFF); // Desabilita redimensionamento automático
+	        table.getColumnModel().getColumn(0).setMaxWidth(100); // Coluna da placa
+	        table.getColumnModel().getColumn(1).setMinWidth(200); // Coluna dos bilhetes
+	        table.setAutoResizeMode(JTable.AUTO_RESIZE_ALL_COLUMNS); // Habilita redimensionamento automático
+
+	    } catch (Exception erro) {
+	        label.setText(erro.getMessage());
+	    }
+	}
+
+
+
+	/*public void listagemPessoa(List<Pessoa> lista) {
 		try {
 			// objeto model contem todas as linhas e colunas da tabela
 			DefaultTableModel model = new DefaultTableModel();
@@ -199,7 +284,7 @@ public class TelaConsulta {
 		} catch (Exception erro) {
 			label.setText(erro.getMessage());
 		}
-	}
+	}*/
 
 
 }
