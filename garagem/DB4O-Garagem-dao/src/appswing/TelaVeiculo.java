@@ -146,7 +146,7 @@ public class TelaVeiculo {
 					String placa = textField_placaLeitura.getText();
 					Object[] options = { "Confirmar", "Cancelar" };
 					int escolha = JOptionPane.showOptionDialog(null,
-							"Esta operacao apagara o veiculo de placa" + placa, "Alerta",
+							"Esta operacao apagara o veiculo de placa: " + placa, "Alerta",
 							JOptionPane.DEFAULT_OPTION, JOptionPane.WARNING_MESSAGE, null, options, options[1]);
 					if (escolha == 0) {
 						Fachada.apagarVeiculo(placa);
