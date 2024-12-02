@@ -66,7 +66,7 @@ public class Fachada {
 		return veiculo;
 	}
 	
-	public static void criarBilhete(String placa, LocalDateTime dataHoraInicial) throws Exception {
+	public static Bilhete criarBilhete(String placa, LocalDateTime dataHoraInicial) throws Exception {
 	    try {
 	        DAO.begin(); // Início da transação
 
@@ -93,6 +93,7 @@ public class Fachada {
 	        daobilhete.create(bilhete);
 
 	        DAO.commit(); // Finalizar a transação com sucesso
+	        return bilhete;
 	    } catch (Exception e) {
 	        DAO.rollback(); // Reverter em caso de erro
 	        throw e; // Repassar a exceção
@@ -101,24 +102,39 @@ public class Fachada {
 
 	
 	public static void registrarEntrada(String placa) throws Exception {
-	    Veiculo veiculo = daoveiculo.read(placa);
-
-	    if (veiculo == null) {
-	        // Se o veículo não existe, cria um novo veículo
-	        veiculo = criarVeiculo(placa);
-	    } else {
-	        // Verifica se o veículo já está na garagem (bilhete ativo)
-	        for (Bilhete bilhete : veiculo.getBilhetes()) {
-	            if (bilhete.getDataHoraFinal() == null) { // Se o bilhete não tem data de saída, o veículo está na garagem
-	                throw new Exception("Veículo já está registrado na garagem: " + placa);
-	            }
-	        }
+		// Verificar se a garagem já atingiu o limite de 10 veículos
+	    long bilhetesAtivos = daobilhete.countAtivos(); // Método que retorna o número de bilhetes ativos
+	    if (bilhetesAtivos >= 10) {
+	        throw new Exception("Garagem está lotada");
 	    }
-
-	    // Criar um novo bilhete de entrada
-	    Bilhete bilhete = new Bilhete(veiculo, LocalDateTime.now());
-	    veiculo.adicionarBilhete(bilhete);
-	    daobilhete.create(bilhete);
+		
+	    DAO.begin();
+	    
+	    try {
+			Veiculo veiculo = daoveiculo.read(placa);
+	
+		    if (veiculo == null) {
+		        // Se o veículo não existe, cria um novo veículo
+		        veiculo = criarVeiculo(placa);
+		    } else {
+		        // Verifica se o veículo já está na garagem (bilhete ativo)
+		        for (Bilhete bilhete : veiculo.getBilhetes()) {
+		            if (bilhete.getDataHoraFinal() == null) { // Se o bilhete não tem data de saída, o veículo está na garagem
+		                throw new Exception("Veículo já está registrado na garagem: " + placa);
+		            }
+		        }
+		    }
+	
+		    // Criar um novo bilhete de entrada
+		    Bilhete bilhete = criarBilhete(veiculo.getPlaca(), LocalDateTime.now());
+		    //Bilhete bilhete = new Bilhete(veiculo, LocalDateTime.now());
+		    veiculo.adicionarBilhete(bilhete);
+		    //daobilhete.create(bilhete);
+		    DAO.commit();
+	    } catch (Exception e) {
+	        DAO.rollback(); // Reverter em caso de erro
+	        throw e; // Repassar a exceção
+	    }
 	}
 
 	
