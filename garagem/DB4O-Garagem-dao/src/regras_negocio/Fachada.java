@@ -151,37 +151,45 @@ public class Fachada {
     }*/
 	
 	public static void registrarSaida(String placa, LocalDateTime horaSaida) throws Exception {
-	    // Verificar se a placa do veículo existe
-	    Veiculo veiculo = daoveiculo.read(placa);
-	    if (veiculo == null) {
-	        throw new Exception("Veículo com a placa '" + placa + "' não encontrado!");
+	    DAO.begin();
+	    try {
+			// Verificar se a placa do veículo existe
+		    Veiculo veiculo = daoveiculo.read(placa);
+		    if (veiculo == null) {
+		        throw new Exception("Veículo com a placa '" + placa + "' não encontrado!");
+		    }
+	
+		    // Buscar o bilhete ativo do veículo
+		    Bilhete bilhete = null;
+		    for (Bilhete b : veiculo.getBilhetes()) {
+		        // Procurando bilhete que não tenha dataHoraFinal (bilhete ainda ativo)
+		        if (b.getDataHoraFinal() == null) {
+		            bilhete = b;
+		            break;
+		        }
+		    }
+	
+		    if (bilhete == null) {
+		        throw new Exception("Veículo não possui um bilhete ativo ou já tem saída registrada.");
+		    }
+	
+		    // Verificar se a hora de saída é posterior à hora de entrada
+		    if (horaSaida.isBefore(bilhete.getDataHoraInicial())) {
+		        throw new Exception("A hora de saída não pode ser anterior à hora de entrada.");
+		    }
+	
+		    // Registrar a hora de saída no bilhete
+		    bilhete.setDataHoraFinal(horaSaida);
+	
+		    // Atualizar o bilhete no banco de dados
+		    daobilhete.update(bilhete);
+		    daoveiculo.update(veiculo);
+		    
+		    DAO.commit(); // Confirma a transação
+	    } catch (Exception e) {
+	        DAO.rollback(); // Reverte a transação em caso de erro
+	        throw e;
 	    }
-
-	    // Buscar o bilhete ativo do veículo
-	    Bilhete bilhete = null;
-	    for (Bilhete b : veiculo.getBilhetes()) {
-	        // Procurando bilhete que não tenha dataHoraFinal (bilhete ainda ativo)
-	        if (b.getDataHoraFinal() == null) {
-	            bilhete = b;
-	            break;
-	        }
-	    }
-
-	    if (bilhete == null) {
-	        throw new Exception("Veículo não possui um bilhete ativo ou já tem saída registrada.");
-	    }
-
-	    // Verificar se a hora de saída é posterior à hora de entrada
-	    if (horaSaida.isBefore(bilhete.getDataHoraInicial())) {
-	        throw new Exception("A hora de saída não pode ser anterior à hora de entrada.");
-	    }
-
-	    // Registrar a hora de saída no bilhete
-	    bilhete.setDataHoraFinal(horaSaida);
-
-	    // Atualizar o bilhete no banco de dados
-	    daobilhete.update(bilhete);
-	    daoveiculo.update(veiculo);
 	}
 	
 	public static void alterarPlacaVeiculo(String placaAtual, String novaPlaca) throws Exception {
