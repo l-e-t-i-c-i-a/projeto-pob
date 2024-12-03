@@ -219,6 +219,7 @@ public class TelaBilhete {
 		frame.getContentPane().add(lblSelecioneUmBilhete);
 
 		textField_Saida = new JTextField();
+		textField_Saida.setToolTipText("Formato esperado: yyyy-MM-ddTHH:mm:ss");
 		textField_Saida.setColumns(10);
 		textField_Saida.setBounds(118, 384, 150, 20);
 		frame.getContentPane().add(textField_Saida);
@@ -238,10 +239,16 @@ public class TelaBilhete {
 						return;
 					}
 					String saida = textField_Saida.getText();
-					String placa = textField_placa.getText();
-					Fachada.registrarSaida(placa, LocalDateTime.parse(saida));
-					label.setText("Saída registrada");
-					listagem();
+					try {
+		                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
+		                LocalDateTime parsedDate = LocalDateTime.parse(saida, formatter);
+		                String placa = textField_placa.getText();
+		                Fachada.registrarSaida(placa, parsedDate);
+		                label.setText("Saída registrada");
+		                listagem();
+		            } catch (Exception ex) {
+		                label.setText("Formato de data/hora inválido. Use yyyy-MM-ddTHH:mm:ss");
+		            }
 				}
 				catch(Exception ex) {
 					label.setText(ex.getMessage());
@@ -258,17 +265,23 @@ public class TelaBilhete {
 			public void actionPerformed(ActionEvent e) {
 				try {
 					if(textField_NovaSaida.getText().isEmpty()) {
-						label.setText("Nova saída vazia");
+						label.setText("Nova saída vazia. Informe uma data/hora no formato: yyyy-MM-ddTHH:mm:ss");
 						return;
 					}
 					String codigo = textField_codigo1.getText();
 					String novaSaida = textField_NovaSaida.getText();
-					Fachada.alterarBilhete(codigo, LocalDateTime.parse(novaSaida));
+					
+					// Validação e parsing do formato de data/hora
+		            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
+		            LocalDateTime novaDataHoraSaida = LocalDateTime.parse(novaSaida, formatter);
+
+					Fachada.alterarBilhete(codigo, novaDataHoraSaida);
 					label.setText("bilhete atualizado");
 					listagem();
-				}
-				catch(Exception ex) {
-					label.setText(ex.getMessage());
+				} catch (java.time.format.DateTimeParseException dtpe) {
+		            label.setText("Informe a data/hora no formato correto: yyyy-MM-ddTHH:mm:ss");
+				} catch(Exception ex) {
+					label.setText("Erro ao atualizar o bilhete: " + ex.getMessage());
 				}
 			}
 		});
@@ -283,6 +296,7 @@ public class TelaBilhete {
 		frame.getContentPane().add(lblNovaDatahoraSaida);
 
 		textField_NovaSaida = new JTextField();
+		textField_NovaSaida.setToolTipText("Formato esperado: yyyy-MM-dd'T'HH:mm:ss");
 		textField_NovaSaida.setColumns(10);
 		textField_NovaSaida.setBounds(416, 384, 150, 20);
 		frame.getContentPane().add(textField_NovaSaida);

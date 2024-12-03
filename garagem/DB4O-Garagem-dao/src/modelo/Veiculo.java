@@ -22,6 +22,11 @@ public class Veiculo {
     public void adicionarBilhete(Bilhete bilhete) {
         bilhetes.add(bilhete);
     }
+    
+    public void removerBilhete(Bilhete bilhete){
+		bilhetes.remove(bilhete);
+		bilhete.setVeiculo(null);
+	}
 
     @Override
     public String toString() {

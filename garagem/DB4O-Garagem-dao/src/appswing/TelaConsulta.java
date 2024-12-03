@@ -133,23 +133,38 @@ public class TelaConsulta {
 					label_4.setText("");
 					switch(index) {
 					case 0: 
-						String valorStr = JOptionPane.showInputDialog("digite o valor");
-						double valor = Double.parseDouble(valorStr);
-						List<Bilhete> resultado1 = Fachada.consultarBilhetesPorValor(valor) ;
-						listagemBilhete(resultado1);
+						try {
+					        String valorStr = JOptionPane.showInputDialog("Digite o valor (número decimal):");
+					        if (valorStr == null) break; // Cancelar
+					        double valor = Double.parseDouble(valorStr);
+					        List<Bilhete> resultado1 = Fachada.consultarBilhetesPorValor(valor);
+					        listagemBilhete(resultado1);
+					    } catch (NumberFormatException ex) {
+					        JOptionPane.showMessageDialog(frame, "Por favor, insira um número válido para o valor.", "Erro de Validação", JOptionPane.ERROR_MESSAGE);
+					    }
 						break;
 					case 1: 
-						String dataStr = JOptionPane.showInputDialog("digite a data");
-						DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
-			            LocalDate data = LocalDate.parse(dataStr, formatter);
-						List<Veiculo> resultado2 = Fachada.consultarVeiculosPorDataDeSaida(data.atStartOfDay());
-						listagemVeiculo(resultado2);		
+						try {
+					        String dataStr = JOptionPane.showInputDialog("Digite a data no formato dd/MM/yyyy:");
+					        if (dataStr == null) break; // Cancelar
+					        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+					        LocalDate data = LocalDate.parse(dataStr, formatter);
+					        List<Veiculo> resultado2 = Fachada.consultarVeiculosPorDataDeSaida(data.atStartOfDay());
+					        listagemVeiculo(resultado2);
+					    } catch (Exception ex) {
+					        JOptionPane.showMessageDialog(frame, "Por favor, insira uma data válida no formato dd/MM/yyyy.", "Erro de Validação", JOptionPane.ERROR_MESSAGE);
+					    }		
 						break;
 					case 2: 
-						String n = JOptionPane.showInputDialog("digite X");
-						int numero = Integer.parseInt(n);
-						List<Veiculo> resultado3 = Fachada.consultarVeiculosPorQuantidadeBilhetes(numero);
-						listagemVeiculo(resultado3);
+						try {
+					        String n = JOptionPane.showInputDialog("Digite X (número inteiro):");
+					        if (n == null) break; // Cancelar
+					        int numero = Integer.parseInt(n);
+					        List<Veiculo> resultado3 = Fachada.consultarVeiculosPorQuantidadeBilhetes(numero);
+					        listagemVeiculo(resultado3);
+					    } catch (NumberFormatException ex) {
+					        JOptionPane.showMessageDialog(frame, "Por favor, insira um número inteiro válido para X.", "Erro de Validação", JOptionPane.ERROR_MESSAGE);
+					    }
 						break;
 
 					}

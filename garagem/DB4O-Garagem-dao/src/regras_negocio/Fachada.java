@@ -18,6 +18,7 @@ import daodb4o.DAOBilhete;
 import modelo.Veiculo;
 import modelo.Bilhete;
 
+
 public class Fachada {
 	private Fachada() {}
 
@@ -247,6 +248,7 @@ public class Fachada {
 	    // Verifica se o bilhete existe
 	    Bilhete bilhete = daobilhete.read(codigoDeBarra);
 	    if (bilhete == null) {
+	    	DAO.rollback();
 	        throw new Exception("Bilhete não encontrado, verifique o código de barra: " + codigoDeBarra);
 	    }
 
@@ -256,6 +258,10 @@ public class Fachada {
 	    }
 
 	    // Se o bilhete estiver encerrado, podemos deletá-lo
+	    Veiculo v = bilhete.getVeiculo();
+	    v.removerBilhete(bilhete);
+	    bilhete.setVeiculo(null);
+	    daoveiculo.update(v);
 	    daobilhete.delete(bilhete);
 	    DAO.commit();
 	}
