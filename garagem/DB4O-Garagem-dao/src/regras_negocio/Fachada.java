@@ -156,7 +156,7 @@ public class Fachada {
 			// Verificar se a placa do veículo existe
 		    Veiculo veiculo = daoveiculo.read(placa);
 		    if (veiculo == null) {
-		        throw new Exception("Veículo com a placa '" + placa + "' não encontrado!");
+		    	throw new IllegalArgumentException("Veículo com a placa '" + placa + "' não encontrado!");
 		    }
 	
 		    // Buscar o bilhete ativo do veículo
@@ -175,7 +175,7 @@ public class Fachada {
 	
 		    // Verificar se a hora de saída é posterior à hora de entrada
 		    if (horaSaida.isBefore(bilhete.getDataHoraInicial())) {
-		        throw new Exception("A hora de saída não pode ser anterior à hora de entrada.");
+		    	throw new IllegalArgumentException("A hora de saída não pode ser anterior à hora de entrada.");
 		    }
 	
 		    // Registrar a hora de saída no bilhete

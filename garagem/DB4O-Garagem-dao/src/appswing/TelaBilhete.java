@@ -15,6 +15,7 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.List;
 
 import javax.swing.JButton;
@@ -239,20 +240,21 @@ public class TelaBilhete {
 						return;
 					}
 					String saida = textField_Saida.getText();
-					try {
-		                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
-		                LocalDateTime parsedDate = LocalDateTime.parse(saida, formatter);
-		                String placa = textField_placa.getText();
-		                Fachada.registrarSaida(placa, parsedDate);
-		                label.setText("Saída registrada");
-		                listagem();
-		            } catch (Exception ex) {
-		                label.setText("Formato de data/hora inválido. Use yyyy-MM-ddTHH:mm:ss");
-		            }
-				}
-				catch(Exception ex) {
-					label.setText(ex.getMessage());
-				}
+					
+	                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss");
+	                LocalDateTime parsedDate = LocalDateTime.parse(saida, formatter);
+	                String placa = textField_placa.getText();
+	                Fachada.registrarSaida(placa, parsedDate);
+	                label.setText("Saída registrada");
+	                listagem();
+		            
+				} catch (DateTimeParseException ex) {
+		            label.setText("Formato de data/hora inválido. Use yyyy-MM-ddTHH:mm:ss.");
+		        } catch (IllegalArgumentException ex) {
+		            label.setText(ex.getMessage());
+		        } catch (Exception ex) {
+		            label.setText("Erro: " + ex.getMessage());
+		        }
 			}
 		});
 		btnSaída.setFont(new Font("Tahoma", Font.PLAIN, 12));
